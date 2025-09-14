@@ -1,0 +1,142 @@
+name: VIN Decoder Workflow
+
+on:
+  repository_dispatch:
+    types: [decode_vin]
+
+env:
+  NHTSA_API_BASE: "https://vpic.nhtsa.dot.gov/api/vehicles"
+
+jobs:
+  primary-decode:
+    name: Primary VIN Decode
+    runs-on: ubuntu-latest
+
+    outputs:
+      make: ${{ steps.decode.outputs.make }}
+      model_year: ${{ steps.decode.outputs.model_year }}
+      manufacturer: ${{ steps.decode.outputs.manufacturer }}
+      vin: ${{ steps.decode.outputs.vin }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scripts/requirements.txt
+
+      - name: Validate VIN input
+        run: |
+          VIN="${{ github.event.client_payload.vin }}"
+          if [ -z "$VIN" ]; then
+            echo "Error: VIN not provided in webhook payload"
+            exit 1
+          fi
+          if [ ${#VIN} -ne 17 ]; then
+            echo "Error: VIN must be exactly 17 characters"
+            exit 1
+          fi
+          echo "VIN validation passed: $VIN"
+
+      - name: Decode VIN
+        id: decode
+        run: |
+          python scripts/decode_vin.py "${{ github.event.client_payload.vin }}"
+
+      - name: Upload basic decode results
+        uses: actions/upload-artifact@v4
+        with:
+          name: vin-basic-data
+          path: vin-basic-data.json
+          retention-days: 30
+
+  enhance-data:
+    name: Enhanced Data Collection
+    runs-on: ubuntu-latest
+    needs: primary-decode
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scripts/requirements.txt
+
+      - name: Download basic decode results
+        uses: actions/download-artifact@v4
+        with:
+          name: vin-basic-data
+
+      - name: Enhance VIN data
+        run: |
+          python scripts/enhance_data.py \
+            --vin "${{ needs.primary-decode.outputs.vin }}" \
+            --make "${{ needs.primary-decode.outputs.make }}" \
+            --year "${{ needs.primary-decode.outputs.model_year }}" \
+            --manufacturer "${{ needs.primary-decode.outputs.manufacturer }}"
+
+      - name: Upload enhanced results
+        uses: actions/upload-artifact@v4
+        with:
+          name: vin-enhanced-data
+          path: vin-enhanced-data.json
+          retention-days: 30
+
+  finalize-data:
+    name: Final Processing
+    runs-on: ubuntu-latest
+    needs: [primary-decode, enhance-data]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scripts/requirements.txt
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: vin-*-data
+          merge-multiple: true
+
+      - name: Finalize and validate data
+        run: |
+          python scripts/finalize_data.py \
+            --vin "${{ needs.primary-decode.outputs.vin }}"
+
+      - name: Upload final results
+        uses: actions/upload-artifact@v4
+        with:
+          name: vin-complete-${{ needs.primary-decode.outputs.vin }}-${{ github.run_number }}
+          path: vin-complete-*.json
+          retention-days: 30
+
+      - name: Display completion summary
+        run: |
+          echo "✅ VIN decoding completed successfully"
+          echo "VIN: ${{ needs.primary-decode.outputs.vin }}"
+          echo "Make: ${{ needs.primary-decode.outputs.make }}"
+          echo "Model Year: ${{ needs.primary-decode.outputs.model_year }}"
+          echo "Workflow Run: ${{ github.run_number }}"

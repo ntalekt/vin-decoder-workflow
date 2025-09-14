@@ -1,0 +1,269 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VIN Decoding Complete Report Schema",
+  "description": "Schema for validating complete VIN decoding reports from NHTSA vPIC workflow",
+  "type": "object",
+  "required": [
+    "report_metadata",
+    "vehicle_summary",
+    "processing_information",
+    "detailed_data"
+  ],
+  "properties": {
+    "report_metadata": {
+      "type": "object",
+      "required": ["vin", "report_type", "generated_at"],
+      "properties": {
+        "vin": {
+          "type": "string",
+          "pattern": "^[A-HJ-NPR-Z0-9]{17}$",
+          "description": "17-character Vehicle Identification Number"
+        },
+        "report_type": {
+          "type": "string",
+          "enum": ["Complete VIN Analysis"]
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "data_sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "workflow_version": {
+          "type": "string"
+        }
+      }
+    },
+    "vehicle_summary": {
+      "type": "object",
+      "required": ["vin", "make", "model", "model_year"],
+      "properties": {
+        "vin": {
+          "type": "string",
+          "pattern": "^[A-HJ-NPR-Z0-9]{17}$"
+        },
+        "make": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "model_year": {
+          "type": "string"
+        },
+        "manufacturer": {
+          "type": "string"
+        },
+        "body_class": {
+          "type": "string"
+        },
+        "engine_cylinders": {
+          "type": "string"
+        },
+        "displacement_l": {
+          "type": "string"
+        },
+        "fuel_type": {
+          "type": "string"
+        },
+        "plant_city": {
+          "type": "string"
+        },
+        "plant_country": {
+          "type": "string"
+        },
+        "drive_type": {
+          "type": "string"
+        }
+      }
+    },
+    "processing_information": {
+      "type": "object",
+      "required": [
+        "final_processing_timestamp",
+        "api_success_rate",
+        "data_quality_score"
+      ],
+      "properties": {
+        "final_processing_timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "processing_workflow": {
+          "type": "string"
+        },
+        "api_endpoints_used": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "api_success_rate": {
+          "type": "string",
+          "pattern": "^[0-9]+\.[0-9]+%$"
+        },
+        "successful_api_calls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total_api_calls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "data_quality_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "vin_components": {
+          "type": "object",
+          "properties": {
+            "wmi": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 3
+            },
+            "vds": {
+              "type": "string",
+              "minLength": 6,
+              "maxLength": 6
+            },
+            "check_digit": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1
+            },
+            "model_year": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1
+            },
+            "plant_code": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1
+            },
+            "vis": {
+              "type": "string",
+              "minLength": 7,
+              "maxLength": 7
+            },
+            "serial": {
+              "type": "string",
+              "minLength": 6,
+              "maxLength": 6
+            }
+          }
+        }
+      }
+    },
+    "detailed_data": {
+      "type": "object",
+      "required": ["basic_decode", "enhanced_decode"],
+      "properties": {
+        "basic_decode": {
+          "type": "object",
+          "required": ["vin", "timestamp", "source"],
+          "properties": {
+            "vin": {
+              "type": "string",
+              "pattern": "^[A-HJ-NPR-Z0-9]{17}$"
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "source": {
+              "type": "string",
+              "enum": ["NHTSA_DecodeVinExtended"]
+            },
+            "vin_components": {
+              "type": "object"
+            },
+            "decoded_data": {
+              "type": "object"
+            },
+            "raw_response": {
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "search_criteria": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "enhanced_decode": {
+          "type": "object",
+          "required": ["vin", "enhancement_timestamp"],
+          "properties": {
+            "vin": {
+              "type": "string",
+              "pattern": "^[A-HJ-NPR-Z0-9]{17}$"
+            },
+            "enhancement_timestamp": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "enhancement_source": {
+              "type": "string"
+            },
+            "enhanced_data": {
+              "type": "object",
+              "properties": {
+                "manufacturer_details": {
+                  "type": "object"
+                },
+                "wmi_decode": {
+                  "type": "object"
+                },
+                "models_for_make_year": {
+                  "type": "object"
+                },
+                "equipment_plant_codes": {
+                  "type": "object"
+                },
+                "vehicle_types_for_make": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "recommendations": {
+      "type": "object",
+      "properties": {
+        "data_completeness": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "vehicle_insights": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "potential_issues": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
