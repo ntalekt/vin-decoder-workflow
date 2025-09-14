@@ -65,20 +65,24 @@ class VINDataEnhancer:
         """Get detailed manufacturer information."""
         if not manufacturer:
             return {}
-
-        url = f"{self.base_url}/GetManufacturerDetails/{manufacturer}"
+        
+        # Use simplified manufacturer name - extract just the brand name
+        simple_name = "PORSCHE" if "PORSCHE" in manufacturer.upper() else manufacturer.split()[0]
+        
+        url = f"{self.base_url}/GetManufacturerDetails/{simple_name}"
         params = {'format': 'json'}
-
+        
         data = await self.make_async_request(url, params)
-
-        # Add 3-second delay for rate limiting
         await asyncio.sleep(3)
-
+        
         return {
             'source': 'GetManufacturerDetails',
+            'manufacturer_query': simple_name,  # Track what we actually queried
+            'original_manufacturer': manufacturer,  # Keep original for reference
             'timestamp': create_timestamp(),
             'data': data
         }
+
 
     async def decode_wmi(self, vin: str) -> Dict[str, Any]:
         """Decode World Manufacturer Identifier."""
@@ -123,15 +127,28 @@ class VINDataEnhancer:
     async def get_equipment_plant_codes(self, year: str) -> Dict[str, Any]:
         """Get equipment plant codes for year."""
         if not year:
-            return {}
-
+            return {'error': 'No year provided', 'success': False}
+        
+        # GetEquipmentPlantCodes only supports years >= 2016
+        try:
+            year_int = int(year)
+            if year_int < 2016:
+                return {
+                    'source': 'GetEquipmentPlantCodes',
+                    'year': year,
+                    'timestamp': create_timestamp(),
+                    'error': f'Equipment Plant Codes not available for years before 2016 (requested: {year})',
+                    'success': False
+                }
+        except ValueError:
+            return {'error': f'Invalid year format: {year}', 'success': False}
+        
         url = f"{self.base_url}/GetEquipmentPlantCodes"
         params = {'Year': year, 'format': 'json'}
-
+        
         data = await self.make_async_request(url, params)
-
         await asyncio.sleep(3)
-
+        
         return {
             'source': 'GetEquipmentPlantCodes',
             'year': year,
