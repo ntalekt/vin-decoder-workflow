@@ -145,6 +145,9 @@ jobs:
     name: Update Master Inventory
     runs-on: ubuntu-latest
     needs: [primary-decode, finalize-data]
+    permissions:
+      contents: write
+
     
     steps:
       - name: Checkout repository
