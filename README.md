@@ -1,6 +1,6 @@
 # VIN Decoder Workflow
 
-[![GitHub Actions](https://github.com/username/vin-decoder-workflow/workflows/VIN%20Decoder%20Workflow/badge.svg)](https://github.com/username/vin-decoder-workflow/actions)
+[![GitHub Actions](https://github.com/ntalekt/vin-decoder-workflow/workflows/VIN%20Decoder%20Workflow/badge.svg)](https://github.com/ntalekt/vin-decoder-workflow/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A comprehensive GitHub Actions workflow for decoding Vehicle Identification Numbers (VINs) using the NHTSA vPIC API. This workflow provides complete vehicle information through multiple API endpoints and delivers detailed analysis reports.
@@ -31,7 +31,7 @@ A comprehensive GitHub Actions workflow for decoding Vehicle Identification Numb
 ### 1. Fork/Clone Repository
 
 ```bash
-git clone https://github.com/username/vin-decoder-workflow.git
+git clone https://github.com/ntalekt/vin-decoder-workflow
 cd vin-decoder-workflow
 ```
 
@@ -57,7 +57,7 @@ $body = @{
     }
 } | ConvertTo-Json
 
-Invoke-RestMethod -Uri "https://api.github.com/repos/USERNAME/REPO/dispatches" -Method POST -Headers $headers -Body $body
+Invoke-RestMethod -Uri "https://github.com/ntalekt/vin-decoder-workflow/dispatches" -Method POST -Headers $headers -Body $body
 ```
 
 ### 4. Monitor Progress
@@ -307,10 +307,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/username/vin-decoder-workflow/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/username/vin-decoder-workflow/discussions)
+- **Issues**: [GitHub Issues](https://github.com/ntalekt/vin-decoder-workflow/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/ntalekt/vin-decoder-workflow/discussions)
 - **Documentation**: This README and inline code comments
 
 ---
-
 **Note**: This workflow uses free NHTSA government data and respects their API usage guidelines. No API keys or paid services required.
