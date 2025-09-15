@@ -82,27 +82,27 @@ jobs:
           echo "# BaT Scrape Summary - $(date)" > bat_scrape_summary.md
           echo "" >> bat_scrape_summary.md
           if [ -f bat_inventory.json ]; then
-            python3 - <<EOF >> bat_scrape_summary.md
+            python3 -c "
 import json
-with open("bat_inventory.json") as f:
+with open('bat_inventory.json') as f:
     data = json.load(f)
-inventory = data.get("inventory", [])
-metadata = data.get("metadata", {})
-print("## Scrape Results")
-print(f"- **Total VINs in BaT Inventory**: {len(inventory)}")
-print(f"- **New VINs This Scrape**: {metadata.get('last_scrape_new', 0)}")
-print(f"- **Updated VINs This Scrape**: {metadata.get('last_scrape_updated', 0)}")
-print(f"- **Total Scrapes**: {metadata.get('total_scrapes', 0)}")
-print(f"- **Last Updated**: {metadata.get('last_updated', 'Unknown')}")
+inventory = data.get('inventory', [])
+metadata = data.get('metadata', {})
+print('## Scrape Results')
+print('- **Total VINs**: ' + str(len(inventory)))
+print('- **New VINs**: ' + str(metadata.get('last_scrape_new', 0)))
+print('- **Updated VINs**: ' + str(metadata.get('last_scrape_updated', 0)))
+print('- **Total Scrapes**: ' + str(metadata.get('total_scrapes', 0)))
+print('- **Last Updated**: ' + metadata.get('last_updated', 'Unknown'))
 print()
 years = {}
 for item in inventory:
-    year = item.get("model_year", "Unknown")
+    year = item.get('model_year', 'Unknown')
     years[year] = years.get(year, 0) + 1
-print("## Inventory by Year:")
+print('## Inventory by Year:')
 for year in sorted(years):
-    print(f"- **{year}**: {years[year]} vehicles")
-EOF
+    print('- **' + year + '**: ' + str(years[year]) + ' vehicles')
+" >> bat_scrape_summary.md
           else
             echo "- **Status**: No BaT inventory found" >> bat_scrape_summary.md
           fi
