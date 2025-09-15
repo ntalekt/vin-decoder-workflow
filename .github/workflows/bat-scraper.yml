@@ -82,7 +82,7 @@ jobs:
           echo "# BaT Scrape Summary - $(date)" > bat_scrape_summary.md
           echo "" >> bat_scrape_summary.md
           if [ -f bat_inventory.json ]; then
-            python3 - <<END >> bat_scrape_summary.md
+            python3 - <<EOF >> bat_scrape_summary.md
 import json
 with open("bat_inventory.json") as f:
     data = json.load(f)
@@ -102,7 +102,7 @@ for item in inventory:
 print("## Inventory by Year:")
 for year in sorted(years):
     print(f"- **{year}**: {years[year]} vehicles")
-END
+EOF
           else
             echo "- **Status**: No BaT inventory found" >> bat_scrape_summary.md
           fi
