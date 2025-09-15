@@ -61,19 +61,16 @@ jobs:
           python scrape_bat.py \
             --max-runtime ${{ env.MAX_RUNTIME_MINUTES }} \
             --output ../bat-porsche-911-listings-$(date +%Y%m%d-%H%M).json
-        continue-on-error: true  # Don't fail workflow if some scraping fails
+        continue-on-error: true
       
       - name: Merge BaT inventory
         run: |
           cd scripts
-          # Find the most recent BaT listings file
           LATEST_FILE=$(ls -t ../bat-porsche-911-listings-*.json 2>/dev/null | head -n1)
           if [ -n "$LATEST_FILE" ]; then
             python merge_bat_inventory.py \
               --input "$LATEST_FILE" \
               --bat-inventory ../bat_inventory.json
-            
-            # Move processed file to archive
             mkdir -p ../archived_scrapes
             mv "$LATEST_FILE" ../archived_scrapes/
           else
@@ -85,7 +82,7 @@ jobs:
           echo "# BaT Scrape Summary - $(date)" > bat_scrape_summary.md
           echo "" >> bat_scrape_summary.md
           if [ -f bat_inventory.json ]; then
-            python3 -c '
+            python3 - <<END >> bat_scrape_summary.md
 import json
 with open("bat_inventory.json") as f:
     data = json.load(f)
@@ -93,10 +90,10 @@ inventory = data.get("inventory", [])
 metadata = data.get("metadata", {})
 print("## Scrape Results")
 print(f"- **Total VINs in BaT Inventory**: {len(inventory)}")
-print(f"- **New VINs This Scrape**: {metadata.get(\"last_scrape_new\", 0)}")
-print(f"- **Updated VINs This Scrape**: {metadata.get(\"last_scrape_updated\", 0)}")
-print(f"- **Total Scrapes**: {metadata.get(\"total_scrapes\", 0)}")
-print(f"- **Last Updated**: {metadata.get(\"last_updated\", \"Unknown\")}")
+print(f"- **New VINs This Scrape**: {metadata.get('last_scrape_new', 0)}")
+print(f"- **Updated VINs This Scrape**: {metadata.get('last_scrape_updated', 0)}")
+print(f"- **Total Scrapes**: {metadata.get('total_scrapes', 0)}")
+print(f"- **Last Updated**: {metadata.get('last_updated', 'Unknown')}")
 print()
 years = {}
 for item in inventory:
@@ -105,19 +102,16 @@ for item in inventory:
 print("## Inventory by Year:")
 for year in sorted(years):
     print(f"- **{year}**: {years[year]} vehicles")
-' >> bat_scrape_summary.md
+END
           else
-            echo "- **Status**: No inventory file found" >> bat_scrape_summary.md
+            echo "- **Status**: No BaT inventory found" >> bat_scrape_summary.md
           fi
       
       - name: Commit and push updates
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "actions@github.com"
-          
-          # Add BaT inventory and summary
           git add bat_inventory.json bat_scrape_summary.md archived_scrapes/
-          
           if git diff --cached --quiet; then
             echo "📝 No changes to commit"
           else
@@ -143,7 +137,6 @@ for year in sorted(years):
           echo "⏱️  Max Runtime: ${{ env.MAX_RUNTIME_MINUTES }} minutes"
           echo "📊 Check bat_inventory.json for results"
           echo "📋 Check bat_scrape_summary.md for detailed report"
-          
           if [ -f bat_inventory.json ]; then
             TOTAL_VINS=$(python3 -c "import json; data=json.load(open('bat_inventory.json')); print(len(data.get('inventory', [])))")
             echo "🚗 Total BaT VINs: $TOTAL_VINS"
