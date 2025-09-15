@@ -3,3 +3,6 @@ jsonschema>=4.19.0
 python-dateutil>=2.8.2
 asyncio
 aiohttp>=3.8.0
+selenium>=4.15.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
