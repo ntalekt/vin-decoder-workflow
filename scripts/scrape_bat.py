@@ -64,7 +64,7 @@ class BaTScraper:
         return elapsed < self.max_runtime
     
     def search_porsche_911_listings(self) -> List[str]:
-        """Search for Porsche 911 listings using Selenium for better parsing."""
+        """Search for Porsche 911 listings by finding Live Auctions and Auction Results sections."""
         self.logger.info("Searching for Porsche 911 listings on BaT")
         
         listing_urls = []
@@ -85,50 +85,15 @@ class BaTScraper:
             )
             
             # Give the page time to fully load
-            time.sleep(3)
+            time.sleep(5)
             
-            # Find auction listing links using multiple selectors
-            selectors = [
-                'a[href*="/auctions/"]',  # Any link containing /auctions/
-                '.auctions-item a',       # Auction item links
-                '.auction-tile a',        # Auction tile links  
-                '.listing-item a',        # Listing item links
-                'a[class*="auction"]',    # Links with auction in class name
-            ]
+            # Find listings in Live Auctions section
+            live_auction_urls = self._extract_section_listings(driver, "Live Auctions")
+            listing_urls.extend(live_auction_urls)
             
-            for selector in selectors:
-                try:
-                    elements = driver.find_elements(By.CSS_SELECTOR, selector)
-                    self.logger.info(f"Found {len(elements)} elements with selector: {selector}")
-                    
-                    for element in elements:
-                        try:
-                            href = element.get_attribute('href')
-                            if href and self.is_valid_auction_url(href):
-                                if href not in listing_urls:
-                                    listing_urls.append(href)
-                                    self.logger.info(f"Added listing: {href}")
-                        except Exception as e:
-                            continue
-                            
-                except Exception as e:
-                    self.logger.warning(f"Error with selector {selector}: {e}")
-                    continue
-            
-            # If we still don't have listings, try to get all links and filter
-            if len(listing_urls) == 0:
-                self.logger.info("No specific auction links found, trying all links")
-                all_links = driver.find_elements(By.TAG_NAME, 'a')
-                
-                for link in all_links[:50]:  # Limit to first 50 links
-                    try:
-                        href = link.get_attribute('href')
-                        if href and self.is_valid_auction_url(href):
-                            if href not in listing_urls:
-                                listing_urls.append(href)
-                                self.logger.info(f"Found valid auction link: {href}")
-                    except Exception:
-                        continue
+            # Find listings in Auction Results section
+            results_urls = self._extract_section_listings(driver, "Auction Results")
+            listing_urls.extend(results_urls)
             
         except Exception as e:
             self.logger.error(f"Error loading Porsche 911 page: {e}")
@@ -140,14 +105,153 @@ class BaTScraper:
                 except:
                     pass
         
-        # Remove duplicates and filter out invalid URLs
-        unique_urls = []
-        for url in listing_urls:
-            if url not in unique_urls and self.is_valid_auction_url(url):
-                unique_urls.append(url)
+        # Remove duplicates
+        unique_urls = list(dict.fromkeys(listing_urls))  # Preserves order
+        self.logger.info(f"Found {len(unique_urls)} unique Porsche 911 auction listings")
         
-        self.logger.info(f"Found {len(unique_urls)} valid Porsche 911 auction listings")
         return unique_urls
+    
+    def _extract_section_listings(self, driver, section_name: str) -> List[str]:
+        """Extract auction listings from a specific section (Live Auctions or Auction Results)."""
+        self.logger.info(f"Extracting listings from {section_name} section")
+        
+        section_urls = []
+        
+        try:
+            # Find section by looking for headers containing the section name
+            section_selectors = [
+                f"//h2[contains(text(), '{section_name}')]",
+                f"//h3[contains(text(), '{section_name}')]",
+                f"//div[contains(@class, 'section-title') and contains(text(), '{section_name}')]",
+                f"//*[contains(text(), 'Porsche 911 {section_name}')]",
+            ]
+            
+            section_element = None
+            for selector in section_selectors:
+                try:
+                    section_element = driver.find_element(By.XPATH, selector)
+                    if section_element:
+                        self.logger.info(f"Found {section_name} section with selector: {selector}")
+                        break
+                except:
+                    continue
+            
+            if not section_element:
+                self.logger.warning(f"Could not find {section_name} section")
+                return section_urls
+            
+            # Find the container that holds the listings for this section
+            # Look for parent/sibling elements that contain auction listings
+            section_container = None
+            
+            # Try to find container by looking at parent elements
+            parent = section_element.find_element(By.XPATH, "..")
+            if parent:
+                # Look for auction links within the section container
+                auction_links = parent.find_elements(By.CSS_SELECTOR, 'a[href*="/auctions/"]')
+                
+                if not auction_links:
+                    # Try looking at the next sibling element
+                    try:
+                        sibling = parent.find_element(By.XPATH, "following-sibling::*[1]")
+                        auction_links = sibling.find_elements(By.CSS_SELECTOR, 'a[href*="/auctions/"]')
+                    except:
+                        pass
+                
+                # Extract URLs from found links
+                for link in auction_links:
+                    try:
+                        href = link.get_attribute('href')
+                        if href and self.is_valid_auction_url(href):
+                            section_urls.append(href)
+                            self.logger.info(f"Found auction link in {section_name}: {href}")
+                    except:
+                        continue
+            
+            self.logger.info(f"Found {len(section_urls)} listings in {section_name} section before Show More")
+            
+            # Look for and click "Show More" buttons to load additional content
+            show_more_clicks = 0
+            max_show_more_clicks = 5  # Limit to prevent infinite loops
+            
+            while show_more_clicks < max_show_more_clicks and self.should_continue():
+                try:
+                    # Look for Show More buttons near this section
+                    show_more_selectors = [
+                        "//button[contains(text(), 'Show More')]",
+                        "//a[contains(text(), 'Show More')]",
+                        "//button[contains(@class, 'show-more')]",
+                        "//a[contains(@class, 'show-more')]",
+                        "//*[contains(text(), 'Load More')]",
+                        "//*[contains(text(), 'More Results')]",
+                    ]
+                    
+                    show_more_button = None
+                    for selector in show_more_selectors:
+                        try:
+                            # Find Show More buttons that are visible and clickable
+                            buttons = driver.find_elements(By.XPATH, selector)
+                            for button in buttons:
+                                if button.is_displayed() and button.is_enabled():
+                                    show_more_button = button
+                                    break
+                            if show_more_button:
+                                break
+                        except:
+                            continue
+                    
+                    if not show_more_button:
+                        self.logger.info(f"No more 'Show More' buttons found for {section_name}")
+                        break
+                    
+                    self.logger.info(f"Clicking 'Show More' button for {section_name} (click #{show_more_clicks + 1})")
+                    
+                    # Scroll to button and click
+                    driver.execute_script("arguments[0].scrollIntoView(true);", show_more_button)
+                    time.sleep(1)
+                    
+                    try:
+                        show_more_button.click()
+                    except:
+                        # If regular click fails, try JavaScript click
+                        driver.execute_script("arguments[0].click();", show_more_button)
+                    
+                    # Wait for new content to load
+                    time.sleep(3)
+                    
+                    # Count new auction links after clicking
+                    new_auction_links = parent.find_elements(By.CSS_SELECTOR, 'a[href*="/auctions/"]')
+                    
+                    # Extract any new URLs
+                    initial_count = len(section_urls)
+                    for link in new_auction_links:
+                        try:
+                            href = link.get_attribute('href')
+                            if href and self.is_valid_auction_url(href) and href not in section_urls:
+                                section_urls.append(href)
+                                self.logger.info(f"Found new auction link in {section_name}: {href}")
+                        except:
+                            continue
+                    
+                    new_count = len(section_urls) - initial_count
+                    self.logger.info(f"Found {new_count} new listings after clicking Show More")
+                    
+                    if new_count == 0:
+                        self.logger.info("No new listings found after clicking Show More, stopping")
+                        break
+                    
+                    show_more_clicks += 1
+                    
+                except Exception as e:
+                    self.logger.warning(f"Error clicking Show More for {section_name}: {e}")
+                    break
+            
+            self.logger.info(f"Total listings found in {section_name}: {len(section_urls)}")
+            
+        except Exception as e:
+            self.logger.error(f"Error extracting listings from {section_name}: {e}")
+        
+        return section_urls
     
     def is_valid_auction_url(self, url: str) -> bool:
         """Check if URL is a valid individual auction listing."""
@@ -174,9 +278,7 @@ class BaTScraper:
                 return False
         
         # Should look like: https://bringatrailer.com/auctions/listing-name/
-        # Extract the path part
         try:
-            from urllib.parse import urlparse
             parsed = urlparse(url)
             path_parts = [p for p in parsed.path.split('/') if p]
             
@@ -276,6 +378,9 @@ class BaTScraper:
             wait = WebDriverWait(driver, 15)
             wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
             
+            # Give page time to fully load
+            time.sleep(3)
+            
             # Get page source and parse
             soup = BeautifulSoup(driver.page_source, 'html.parser')
             
@@ -320,15 +425,19 @@ class BaTScraper:
                 listing_data['listing_id'] = url_parts[2]
             
             # Title and basic info
-            title_elem = soup.find('h1') or soup.find('title')
-            if title_elem:
-                title_text = title_elem.get_text(strip=True)
-                listing_data['title'] = title_text
-                
-                # Extract year from title
-                year_match = re.search(r'\b(19|20)\d{2}\b', title_text)
-                if year_match:
-                    listing_data['year'] = year_match.group()
+            title_selectors = ['h1', '.listing-title', '.auction-title', 'title']
+            for selector in title_selectors:
+                title_elem = soup.find(selector)
+                if title_elem:
+                    title_text = title_elem.get_text(strip=True)
+                    if title_text and len(title_text) > 5:  # Valid title
+                        listing_data['title'] = title_text
+                        
+                        # Extract year from title
+                        year_match = re.search(r'\b(19|20)\d{2}\b', title_text)
+                        if year_match:
+                            listing_data['year'] = year_match.group()
+                        break
             
             # Try to extract VIN
             vin = self.extract_vin_from_text(page_text)
@@ -355,7 +464,7 @@ class BaTScraper:
             # Price information
             listing_data['price_info'] = self.extract_price_from_text(page_text)
             
-            # Mileage
+            # Mileage extraction
             mileage_patterns = [
                 r'(\d{1,3}(?:,\d{3})*)\s*(?:mile|mi\b)',
                 r'(\d{1,3}(?:,\d{3})*)\s*(?:k|km)\s*(?:mile|mi)',
@@ -369,7 +478,7 @@ class BaTScraper:
                     listing_data['mileage'] = match.group(1)
                     break
             
-            # Location
+            # Location extraction
             location_patterns = [
                 r'(?:location|located)[:\s]+([^,\n]+(?:,\s*[A-Z]{2})?)',
                 r'seller[:\s]+[^,\n]+[,\s]+([^,\n]+(?:,\s*[A-Z]{2})?)',
@@ -398,13 +507,13 @@ class BaTScraper:
                     break
             
             # Transmission
-            if 'manual' in specs_text or 'stick' in specs_text or '5-speed' in specs_text or '6-speed' in specs_text:
+            if any(word in specs_text for word in ['manual', 'stick', '5-speed', '6-speed']):
                 listing_data['specifications']['transmission'] = 'Manual'
-            elif 'automatic' in specs_text or 'tiptronic' in specs_text or 'pdk' in specs_text:
+            elif any(word in specs_text for word in ['automatic', 'tiptronic', 'pdk']):
                 listing_data['specifications']['transmission'] = 'Automatic'
             
             # Drive type
-            if 'carrera 4' in specs_text or 'c4' in specs_text or 'awd' in specs_text or 'all-wheel' in specs_text:
+            if any(word in specs_text for word in ['carrera 4', 'c4', 'awd', 'all-wheel']):
                 listing_data['specifications']['drive_type'] = 'AWD'
             else:
                 listing_data['specifications']['drive_type'] = 'RWD'
@@ -424,10 +533,21 @@ class BaTScraper:
             listing_data['features'] = features
             
             # Description
-            description_elem = soup.find('div', class_=re.compile(r'description|summary|content'))
-            if description_elem:
-                description = description_elem.get_text(strip=True)[:1000]
-                listing_data['description'] = description
+            description_selectors = [
+                'div[class*="description"]',
+                'div[class*="summary"]', 
+                'div[class*="content"]',
+                '.listing-description',
+                '.auction-description'
+            ]
+            
+            for selector in description_selectors:
+                description_elem = soup.select_one(selector)
+                if description_elem:
+                    description = description_elem.get_text(strip=True)[:1000]
+                    if len(description) > 20:  # Valid description
+                        listing_data['description'] = description
+                        break
             
             # Photo count
             img_tags = soup.find_all('img')
@@ -565,7 +685,7 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
                     results['listings'].append(normalized_record)
                 
                 # Small delay between listings
-                time.sleep(3)
+                time.sleep(4)  # Increased delay to be respectful
         
         results['metadata']['total_listings_scraped'] = scraped_count
         results['metadata']['listings_with_vins'] = vins_found
