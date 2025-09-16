@@ -25,7 +25,6 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 from utils import setup_logging, save_json_file, create_timestamp, validate_vin
 
-
 class BaTScraper:
     """Bring a Trailer scraper for Porsche 911 listings."""
     
@@ -39,7 +38,7 @@ class BaTScraper:
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36'
         })
         self.processed_vins = set()
-        
+    
     def configure_chrome_driver(self) -> webdriver.Chrome:
         """Configure Chrome driver for BaT scraping."""
         chrome_options = Options()
@@ -55,7 +54,6 @@ class BaTScraper:
         
         driver = webdriver.Chrome(options=chrome_options)
         driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
-        
         return driver
     
     def should_continue(self) -> bool:
@@ -66,7 +64,6 @@ class BaTScraper:
     def search_porsche_911_listings(self) -> List[str]:
         """Search for Porsche 911 listings by finding ALL listing links on the page."""
         self.logger.info("Searching for Porsche 911 listings on BaT")
-        
         listing_urls = []
         driver = None
         
@@ -76,7 +73,6 @@ class BaTScraper:
             # Go to the Porsche 911 page
             porsche_url = f"{self.base_url}/porsche/911/"
             self.logger.info(f"Loading Porsche 911 page: {porsche_url}")
-            
             driver.get(porsche_url)
             
             # Wait for page to load
@@ -147,7 +143,6 @@ class BaTScraper:
                     # Scroll and click
                     driver.execute_script("arguments[0].scrollIntoView(true);", clickable_button)
                     time.sleep(1)
-                    
                     try:
                         clickable_button.click()
                     except:
@@ -180,10 +175,10 @@ class BaTScraper:
                 except Exception as e:
                     self.logger.warning(f"DEBUG: Error clicking Show More: {e}")
                     break
-            
+        
         except Exception as e:
             self.logger.error(f"Error loading Porsche 911 page: {e}")
-            
+        
         finally:
             if driver:
                 try:
@@ -204,7 +199,7 @@ class BaTScraper:
         if not url:
             self.logger.info("DEBUG: URL is empty")
             return False
-            
+        
         # Must contain /listing/
         if '/listing/' not in url:
             self.logger.info("DEBUG: URL doesn't contain /listing/")
@@ -219,44 +214,31 @@ class BaTScraper:
             if len(path_parts) >= 2 and path_parts[0] == 'listing':
                 listing_name = path_parts[1]
                 
-                # ENHANCED FILTERING: Must start with a valid year (1981-2025)
-                year_match = re.match(r'^(19[8-9]\d|20[0-2]\d)', listing_name)
-                if not year_match:
-                    self.logger.info(f"DEBUG: Listing doesn't start with valid year (1981-2025): {listing_name}")
+                # STRICTER FILTERING: Must follow exact pattern YYYY-porsche-911-*
+                # This will only match listings like: 1988-porsche-911-carrera-coupe-80
+                pattern = r'^(19[8-9]\d|20[0-2]\d)-porsche-911-'
+                if not re.match(pattern, listing_name, re.IGNORECASE):
+                    self.logger.info(f"DEBUG: Listing doesn't match YYYY-porsche-911- pattern: {listing_name}")
                     return False
                 
-                year = int(year_match.group(1))
-                if year < 1981:
-                    self.logger.info(f"DEBUG: Year {year} is before 1981, skipping")
-                    return False
-                
-                # ENHANCED FILTERING: Skip parts/accessories listings
-                parts_keywords = [
-                    'seats', 'seat', 'wheels', 'wheel', 'fuchs', 'turbo-seats',
-                    'bucket-seats', 'recaro', 'hardtop', 'removable', 'speedline'
-                ]
-                
-                listing_lower = listing_name.lower()
-                for keyword in parts_keywords:
-                    if keyword in listing_lower:
-                        self.logger.info(f"DEBUG: Skipping parts/accessories listing with keyword '{keyword}': {listing_name}")
+                # Extract and validate year
+                year_match = re.match(r'^(\d{4})', listing_name)
+                if year_match:
+                    year = int(year_match.group(1))
+                    if year < 1981:
+                        self.logger.info(f"DEBUG: Year {year} is before 1981, skipping")
                         return False
-                
-                # ENHANCED FILTERING: Must contain 'porsche' and '911' in the name
-                if 'porsche' not in listing_lower or '911' not in listing_lower:
-                    self.logger.info(f"DEBUG: Listing doesn't contain 'porsche' and '911': {listing_name}")
-                    return False
                 
                 self.logger.info(f"DEBUG: Valid 1981+ Porsche 911 listing URL: {url}")
                 return True
             else:
                 self.logger.info(f"DEBUG: Invalid path structure: {path_parts}")
+        
         except Exception as e:
             self.logger.info(f"DEBUG: Error parsing URL: {e}")
             return False
-            
+        
         return False
-
     
     def extract_vin_from_text(self, text: str) -> Optional[str]:
         """Extract 17-digit VIN from text content."""
@@ -326,7 +308,7 @@ class BaTScraper:
         """Scrape detailed information from a BaT listing."""
         if not self.should_continue():
             return None
-            
+        
         self.logger.info(f"Scraping listing: {listing_url}")
         
         # Skip if it's not a valid listing URL
@@ -397,7 +379,6 @@ class BaTScraper:
                     title_text = title_elem.get_text(strip=True)
                     if title_text and len(title_text) > 5:  # Valid title
                         listing_data['title'] = title_text
-                        
                         # Extract year from title
                         year_match = re.search(r'\b(19|20)\d{2}\b', title_text)
                         if year_match:
@@ -406,7 +387,6 @@ class BaTScraper:
             
             # Try to extract VIN
             vin = self.extract_vin_from_text(page_text)
-            
             if not vin:
                 # If no VIN found, create a synthetic one based on URL for tracking
                 listing_id = listing_data['listing_id']
@@ -422,7 +402,7 @@ class BaTScraper:
             if vin in self.processed_vins:
                 self.logger.info(f"VIN/ID {vin} already processed, skipping")
                 return None
-                
+            
             listing_data['vin'] = vin
             self.processed_vins.add(vin)
             
@@ -500,7 +480,7 @@ class BaTScraper:
             # Description
             description_selectors = [
                 'div[class*="description"]',
-                'div[class*="summary"]', 
+                'div[class*="summary"]',
                 'div[class*="content"]',
                 '.listing-description',
                 '.auction-description'
@@ -532,7 +512,7 @@ class BaTScraper:
         except Exception as e:
             self.logger.error(f"Error scraping listing {listing_url}: {e}")
             return None
-            
+        
         finally:
             if driver:
                 try:
@@ -542,7 +522,6 @@ class BaTScraper:
     
     def normalize_bat_record(self, listing_data: Dict[str, Any]) -> Dict[str, Any]:
         """Normalize BaT listing data to match inventory schema."""
-        
         # Extract year as integer
         year = 0
         if listing_data.get('year') and listing_data['year'].isdigit():
@@ -602,7 +581,6 @@ class BaTScraper:
         
         return normalized
 
-
 def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
     """Scrape BaT for Porsche 911 listings."""
     logger = setup_logging()
@@ -638,16 +616,15 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
             if not scraper.should_continue():
                 logger.info("Time limit reached, stopping scrape")
                 break
-                
-            listing_data = scraper.scrape_listing_details(url)
             
+            listing_data = scraper.scrape_listing_details(url)
             if listing_data:
                 scraped_count += 1
-                
                 if listing_data.get('vin'):
                     vins_found += 1
-                    normalized_record = scraper.normalize_bat_record(listing_data)
-                    results['listings'].append(normalized_record)
+                
+                normalized_record = scraper.normalize_bat_record(listing_data)
+                results['listings'].append(normalized_record)
                 
                 # Small delay between listings
                 time.sleep(4)  # Increased delay to be respectful
@@ -669,16 +646,15 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
     
     return results
 
-
 def main():
     """Main function."""
     parser = argparse.ArgumentParser(description='Scrape Bring a Trailer for Porsche 911 listings')
-    parser.add_argument('--max-runtime', type=int, default=45, 
-                       help='Maximum runtime in minutes (default: 45)')
+    parser.add_argument('--max-runtime', type=int, default=45,
+                        help='Maximum runtime in minutes (default: 45)')
     parser.add_argument('--output', default='bat-porsche-911-listings.json',
-                       help='Output filename')
-    
+                        help='Output filename')
     args = parser.parse_args()
+    
     logger = setup_logging()
     
     try:
@@ -694,7 +670,7 @@ def main():
         metadata = results['metadata']
         print(f"✅ BaT scraping completed")
         print(f"📁 Results saved to {args.output}")
-        print(f"⏱️  Runtime: {metadata['runtime_minutes']} minutes")
+        print(f"⏱️ Runtime: {metadata['runtime_minutes']} minutes")
         print(f"🔍 Listings found: {metadata['total_listings_found']}")
         print(f"📊 Listings scraped: {metadata['total_listings_scraped']}")
         print(f"🚗 VINs collected: {metadata['listings_with_vins']}")
@@ -706,12 +682,11 @@ def main():
                 print(f"📅 Year range: {min(years)}-{max(years)}")
         
         return 0
-        
+    
     except Exception as e:
         logger.error(f"BaT scraping failed: {e}")
         print(f"❌ Error: {e}", file=sys.stderr)
         return 1
-
 
 if __name__ == '__main__':
     sys.exit(main())
