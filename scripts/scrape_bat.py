@@ -64,7 +64,7 @@ class BaTScraper:
         return elapsed < self.max_runtime
     
     def search_porsche_911_listings(self) -> List[str]:
-        """Search for Porsche 911 listings by finding Live Auctions and Auction Results sections."""
+        """Search for Porsche 911 listings by finding ALL auction links on the page."""
         self.logger.info("Searching for Porsche 911 listings on BaT")
         
         listing_urls = []
@@ -87,13 +87,99 @@ class BaTScraper:
             # Give the page time to fully load
             time.sleep(5)
             
-            # Find listings in Live Auctions section
-            live_auction_urls = self._extract_section_listings(driver, "Live Auctions")
-            listing_urls.extend(live_auction_urls)
+            # SIMPLIFIED APPROACH: Just get ALL auction links on the page
+            all_auction_links = driver.find_elements(By.CSS_SELECTOR, 'a[href*="/auctions/"]')
+            self.logger.info(f"DEBUG: Found {len(all_auction_links)} total auction links on page")
             
-            # Find listings in Auction Results section
-            results_urls = self._extract_section_listings(driver, "Auction Results")
-            listing_urls.extend(results_urls)
+            # Show first few auction links for debugging
+            for i, link in enumerate(all_auction_links[:10]):
+                try:
+                    href = link.get_attribute('href')
+                    text = link.text.strip()
+                    self.logger.info(f"DEBUG: Auction link {i+1}: {href} - Text: '{text}'")
+                except:
+                    continue
+            
+            for link in all_auction_links:
+                try:
+                    href = link.get_attribute('href')
+                    self.logger.info(f"DEBUG: Checking URL: {href}")
+                    if href and self.is_valid_auction_url(href):
+                        listing_urls.append(href)
+                        self.logger.info(f"DEBUG: Added valid auction link: {href}")
+                    else:
+                        self.logger.info(f"DEBUG: Rejected URL: {href}")
+                except Exception as e:
+                    self.logger.info(f"DEBUG: Error processing link: {e}")
+                    continue
+            
+            # Try clicking Show More buttons to load additional content
+            show_more_clicks = 0
+            max_clicks = 5
+            
+            while show_more_clicks < max_clicks and self.should_continue():
+                try:
+                    # Find any Show More button on the page
+                    show_more_buttons = driver.find_elements(By.XPATH, "//*[contains(text(), 'Show More') or contains(text(), 'Load More')]")
+                    self.logger.info(f"DEBUG: Found {len(show_more_buttons)} Show More buttons")
+                    
+                    clickable_button = None
+                    for i, button in enumerate(show_more_buttons):
+                        try:
+                            button_text = button.text.strip()
+                            is_displayed = button.is_displayed()
+                            is_enabled = button.is_enabled()
+                            self.logger.info(f"DEBUG: Button {i+1}: '{button_text}' - Displayed: {is_displayed}, Enabled: {is_enabled}")
+                            
+                            if is_displayed and is_enabled:
+                                clickable_button = button
+                                break
+                        except Exception as e:
+                            self.logger.info(f"DEBUG: Error checking button {i+1}: {e}")
+                            continue
+                    
+                    if not clickable_button:
+                        self.logger.info("DEBUG: No more clickable Show More buttons found")
+                        break
+                    
+                    self.logger.info(f"DEBUG: Clicking Show More button (click #{show_more_clicks + 1})")
+                    
+                    # Scroll and click
+                    driver.execute_script("arguments[0].scrollIntoView(true);", clickable_button)
+                    time.sleep(1)
+                    
+                    try:
+                        clickable_button.click()
+                    except:
+                        driver.execute_script("arguments[0].click();", clickable_button)
+                    
+                    time.sleep(4)  # Wait for content to load
+                    
+                    # Check for new auction links
+                    new_auction_links = driver.find_elements(By.CSS_SELECTOR, 'a[href*="/auctions/"]')
+                    initial_count = len(listing_urls)
+                    self.logger.info(f"DEBUG: After clicking, found {len(new_auction_links)} total auction links")
+                    
+                    for link in new_auction_links:
+                        try:
+                            href = link.get_attribute('href')
+                            if href and self.is_valid_auction_url(href) and href not in listing_urls:
+                                listing_urls.append(href)
+                                self.logger.info(f"DEBUG: Found new auction link: {href}")
+                        except:
+                            continue
+                    
+                    new_count = len(listing_urls) - initial_count
+                    self.logger.info(f"DEBUG: Found {new_count} new auction links after clicking Show More")
+                    
+                    if new_count == 0:
+                        break
+                    
+                    show_more_clicks += 1
+                    
+                except Exception as e:
+                    self.logger.warning(f"DEBUG: Error clicking Show More: {e}")
+                    break
             
         except Exception as e:
             self.logger.error(f"Error loading Porsche 911 page: {e}")
@@ -106,7 +192,7 @@ class BaTScraper:
                     pass
         
         # Remove duplicates
-        unique_urls = list(dict.fromkeys(listing_urls))  # Preserves order
+        unique_urls = list(dict.fromkeys(listing_urls))
         self.logger.info(f"Found {len(unique_urls)} unique Porsche 911 auction listings")
         
         return unique_urls
@@ -140,39 +226,78 @@ class BaTScraper:
                 self.logger.warning(f"Could not find {section_name} section")
                 return section_urls
             
-            # Find the container that holds the listings for this section
-            # Look for parent/sibling elements that contain auction listings
-            section_container = None
+            # DEBUG: Let's examine the DOM structure around this section
+            self.logger.info(f"DEBUG: Examining DOM structure for {section_name}")
             
-            # Try to find container by looking at parent elements
+            # Get parent element
             parent = section_element.find_element(By.XPATH, "..")
-            if parent:
-                # Look for auction links within the section container
-                auction_links = parent.find_elements(By.CSS_SELECTOR, 'a[href*="/auctions/"]')
+            self.logger.info(f"DEBUG: Parent element tag: {parent.tag_name}")
+            self.logger.info(f"DEBUG: Parent element class: {parent.get_attribute('class')}")
+            
+            # Look for ANY links in the parent
+            all_links_in_parent = parent.find_elements(By.TAG_NAME, 'a')
+            self.logger.info(f"DEBUG: Found {len(all_links_in_parent)} total links in parent")
+            
+            # Look for auction links specifically
+            auction_links = parent.find_elements(By.CSS_SELECTOR, 'a[href*="/auctions/"]')
+            self.logger.info(f"DEBUG: Found {len(auction_links)} auction links in parent")
+            
+            # If no auction links in parent, try broader search
+            if len(auction_links) == 0:
+                # Try looking at the entire page for auction links
+                all_auction_links = driver.find_elements(By.CSS_SELECTOR, 'a[href*="/auctions/"]')
+                self.logger.info(f"DEBUG: Found {len(all_auction_links)} total auction links on page")
                 
-                if not auction_links:
-                    # Try looking at the next sibling element
-                    try:
-                        sibling = parent.find_element(By.XPATH, "following-sibling::*[1]")
-                        auction_links = sibling.find_elements(By.CSS_SELECTOR, 'a[href*="/auctions/"]')
-                    except:
-                        pass
-                
-                # Extract URLs from found links
-                for link in auction_links:
+                # Show first few auction links for debugging
+                for i, link in enumerate(all_auction_links[:5]):
                     try:
                         href = link.get_attribute('href')
-                        if href and self.is_valid_auction_url(href):
-                            section_urls.append(href)
-                            self.logger.info(f"Found auction link in {section_name}: {href}")
+                        text = link.text.strip()
+                        self.logger.info(f"DEBUG: Auction link {i+1}: {href} - Text: '{text}'")
                     except:
                         continue
+            
+            # Try different container strategies
+            container_selectors = [
+                "..",  # Direct parent
+                "../following-sibling::*[1]",  # Next sibling
+                "..//div[contains(@class, 'listings')]",  # Listings container
+                "..//div[contains(@class, 'auction')]",  # Auction container
+                "..//div[contains(@class, 'grid')]",  # Grid container
+                "..//ul",  # List container
+                "..//*[contains(@class, 'item')]/..",  # Item containers
+            ]
+            
+            for container_selector in container_selectors:
+                try:
+                    container = section_element.find_element(By.XPATH, container_selector)
+                    container_auction_links = container.find_elements(By.CSS_SELECTOR, 'a[href*="/auctions/"]')
+                    self.logger.info(f"DEBUG: Container '{container_selector}' has {len(container_auction_links)} auction links")
+                    
+                    if len(container_auction_links) > 0:
+                        # This container has auction links! Use it
+                        auction_links = container_auction_links
+                        self.logger.info(f"DEBUG: Using container '{container_selector}' which has auction links")
+                        break
+                except Exception as e:
+                    self.logger.info(f"DEBUG: Error with container '{container_selector}': {e}")
+                    continue
+            
+            # Extract URLs from found links
+            for link in auction_links:
+                try:
+                    href = link.get_attribute('href')
+                    if href and self.is_valid_auction_url(href):
+                        section_urls.append(href)
+                        self.logger.info(f"Found auction link in {section_name}: {href}")
+                except:
+                    continue
             
             self.logger.info(f"Found {len(section_urls)} listings in {section_name} section before Show More")
             
             # Look for and click "Show More" buttons to load additional content
             show_more_clicks = 0
-            max_show_more_clicks = 5  # Limit to prevent infinite loops
+            max_show_more_clicks = 3  # Reduced for debugging
             
             while show_more_clicks < max_show_more_clicks and self.should_continue():
                 try:
@@ -191,13 +316,18 @@ class BaTScraper:
                         try:
                             # Find Show More buttons that are visible and clickable
                             buttons = driver.find_elements(By.XPATH, selector)
+                            self.logger.info(f"DEBUG: Found {len(buttons)} buttons with selector: {selector}")
+                            
                             for button in buttons:
                                 if button.is_displayed() and button.is_enabled():
+                                    button_text = button.text.strip()
+                                    self.logger.info(f"DEBUG: Found clickable Show More button: '{button_text}'")
                                     show_more_button = button
                                     break
                             if show_more_button:
                                 break
-                        except:
+                        except Exception as e:
+                            self.logger.info(f"DEBUG: Error with selector {selector}: {e}")
                             continue
                     
                     if not show_more_button:
@@ -220,7 +350,9 @@ class BaTScraper:
                     time.sleep(3)
                     
                     # Count new auction links after clicking
-                    new_auction_links = parent.find_elements(By.CSS_SELECTOR, 'a[href*="/auctions/"]')
+                    # Use the same container strategy that worked before
+                    container = section_element.find_element(By.XPATH, "..")
+                    new_auction_links = container.find_elements(By.CSS_SELECTOR, 'a[href*="/auctions/"]')
                     
                     # Extract any new URLs
                     initial_count = len(section_urls)
@@ -255,11 +387,15 @@ class BaTScraper:
     
     def is_valid_auction_url(self, url: str) -> bool:
         """Check if URL is a valid individual auction listing."""
+        self.logger.info(f"DEBUG: Validating URL: {url}")
+        
         if not url:
+            self.logger.info("DEBUG: URL is empty")
             return False
             
         # Must contain /auctions/
         if '/auctions/' not in url:
+            self.logger.info("DEBUG: URL doesn't contain /auctions/")
             return False
             
         # Exclude these patterns
@@ -275,20 +411,28 @@ class BaTScraper:
         
         for pattern in excluded_patterns:
             if pattern in url:
+                self.logger.info(f"DEBUG: URL excluded by pattern: {pattern}")
                 return False
         
         # Should look like: https://bringatrailer.com/auctions/listing-name/
         try:
             parsed = urlparse(url)
             path_parts = [p for p in parsed.path.split('/') if p]
+            self.logger.info(f"DEBUG: URL path parts: {path_parts}")
             
             # Should have at least 2 parts: ['auctions', 'listing-name']
             if len(path_parts) >= 2 and path_parts[0] == 'auctions':
                 listing_name = path_parts[1]
                 # Listing name should have some content and not be a reserved word
                 if len(listing_name) > 3 and listing_name not in ['results', 'search', 'ended', 'live']:
+                    self.logger.info(f"DEBUG: Valid auction URL: {url}")
                     return True
-        except:
+                else:
+                    self.logger.info(f"DEBUG: Invalid listing name: {listing_name}")
+            else:
+                self.logger.info(f"DEBUG: Invalid path structure: {path_parts}")
+        except Exception as e:
+            self.logger.info(f"DEBUG: Error parsing URL: {e}")
             return False
             
         return False
