@@ -198,7 +198,7 @@ class BaTScraper:
         return unique_urls
     
     def is_valid_listing_url(self, url: str) -> bool:
-        """Check if URL is a valid individual BaT listing."""
+        """Check if URL is a valid individual BaT listing for a 1981+ Porsche 911."""
         self.logger.info(f"DEBUG: Validating listing URL: {url}")
         
         if not url:
@@ -210,7 +210,6 @@ class BaTScraper:
             self.logger.info("DEBUG: URL doesn't contain /listing/")
             return False
         
-        # Should look like: https://bringatrailer.com/listing/listing-name/
         try:
             parsed = urlparse(url)
             path_parts = [p for p in parsed.path.split('/') if p]
@@ -219,12 +218,37 @@ class BaTScraper:
             # Should have at least 2 parts: ['listing', 'listing-name']
             if len(path_parts) >= 2 and path_parts[0] == 'listing':
                 listing_name = path_parts[1]
-                # Listing name should have some content
-                if len(listing_name) > 3:
-                    self.logger.info(f"DEBUG: Valid listing URL: {url}")
-                    return True
-                else:
-                    self.logger.info(f"DEBUG: Invalid listing name: {listing_name}")
+                
+                # ENHANCED FILTERING: Must start with a valid year (1981-2025)
+                year_match = re.match(r'^(19[8-9]\d|20[0-2]\d)', listing_name)
+                if not year_match:
+                    self.logger.info(f"DEBUG: Listing doesn't start with valid year (1981-2025): {listing_name}")
+                    return False
+                
+                year = int(year_match.group(1))
+                if year < 1981:
+                    self.logger.info(f"DEBUG: Year {year} is before 1981, skipping")
+                    return False
+                
+                # ENHANCED FILTERING: Skip parts/accessories listings
+                parts_keywords = [
+                    'seats', 'seat', 'wheels', 'wheel', 'fuchs', 'turbo-seats',
+                    'bucket-seats', 'recaro', 'hardtop', 'removable', 'speedline'
+                ]
+                
+                listing_lower = listing_name.lower()
+                for keyword in parts_keywords:
+                    if keyword in listing_lower:
+                        self.logger.info(f"DEBUG: Skipping parts/accessories listing with keyword '{keyword}': {listing_name}")
+                        return False
+                
+                # ENHANCED FILTERING: Must contain 'porsche' and '911' in the name
+                if 'porsche' not in listing_lower or '911' not in listing_lower:
+                    self.logger.info(f"DEBUG: Listing doesn't contain 'porsche' and '911': {listing_name}")
+                    return False
+                
+                self.logger.info(f"DEBUG: Valid 1981+ Porsche 911 listing URL: {url}")
+                return True
             else:
                 self.logger.info(f"DEBUG: Invalid path structure: {path_parts}")
         except Exception as e:
@@ -232,6 +256,7 @@ class BaTScraper:
             return False
             
         return False
+
     
     def extract_vin_from_text(self, text: str) -> Optional[str]:
         """Extract 17-digit VIN from text content."""
