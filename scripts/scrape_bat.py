@@ -64,139 +64,55 @@ class BaTScraper:
         return elapsed < self.max_runtime
     
     def search_porsche_911_listings(self) -> List[str]:
-        """Search for Porsche 911 listings on BaT using multiple approaches."""
+        """Search for Porsche 911 listings using the dedicated Porsche 911 page."""
         self.logger.info("Searching for Porsche 911 listings on BaT")
         
         listing_urls = []
+        page = 1
         
-        # Approach 1: Browse auctions page directly
-        try:
-            auctions_url = f"{self.base_url}/auctions/"
-            response = self.session.get(auctions_url, timeout=30)
-            response.raise_for_status()
-            
-            soup = BeautifulSoup(response.content, 'html.parser')
-            
-            # Look for auction listing links
-            auction_links = soup.find_all('a', href=re.compile(r'/auctions/[^/]+/$'))
-            
-            for link in auction_links:
-                href = link.get('href')
-                if href and href.startswith('/auctions/'):
-                    # Filter for Porsche 911 in title or content
-                    link_text = link.get_text(strip=True).lower()
-                    if ('porsche' in link_text and '911' in link_text) or 'porsche-911' in href:
-                        full_url = urljoin(self.base_url, href)
-                        if full_url not in listing_urls:
-                            listing_urls.append(full_url)
-                            
-            self.logger.info(f"Found {len(listing_urls)} Porsche 911 listings from auctions page")
-            
-        except Exception as e:
-            self.logger.warning(f"Error browsing auctions page: {e}")
-        
-        # Approach 2: Try different search patterns
-        search_patterns = [
-            {'make[]': 'porsche', 'model[]': '911'},
-            {'search': 'porsche 911'},
-            {'q': 'porsche+911'},
-        ]
-        
-        for pattern in search_patterns:
-            if len(listing_urls) >= 10:  # Limit search if we have enough results
-                break
-                
+        while self.should_continue() and page <= 10:  # Limit to 10 pages max
             try:
-                search_url = f"{self.base_url}/search/"
-                response = self.session.get(search_url, params=pattern, timeout=30)
+                # Use the dedicated Porsche 911 page with pagination
+                if page == 1:
+                    porsche_url = f"{self.base_url}/porsche/911/"
+                else:
+                    porsche_url = f"{self.base_url}/porsche/911/page/{page}/"
+                
+                self.logger.info(f"Fetching page {page}: {porsche_url}")
+                
+                response = self.session.get(porsche_url, timeout=30)
                 response.raise_for_status()
                 
                 soup = BeautifulSoup(response.content, 'html.parser')
                 
-                # Look for listing links
-                links = soup.find_all('a', href=re.compile(r'/auctions/[^/]+/$'))
+                # Look for auction listing links - BaT uses specific patterns
+                auction_links = soup.find_all('a', href=re.compile(r'/auctions/[^/]+/$'))
                 
-                for link in links:
+                page_urls = []
+                for link in auction_links:
                     href = link.get('href')
-                    if href:
+                    if href and href.startswith('/auctions/'):
                         full_url = urljoin(self.base_url, href)
                         if full_url not in listing_urls:
                             listing_urls.append(full_url)
+                            page_urls.append(full_url)
                 
-                self.logger.info(f"Found {len(listing_urls)} total listings after search pattern: {pattern}")
-                time.sleep(1)  # Rate limiting
+                self.logger.info(f"Found {len(page_urls)} new listings on page {page}")
                 
-            except Exception as e:
-                self.logger.warning(f"Error with search pattern {pattern}: {e}")
-        
-        # Approach 3: Browse recent results page for any Porsche content
-        try:
-            results_url = f"{self.base_url}/auctions/results/"
-            response = self.session.get(results_url, timeout=30)
-            response.raise_for_status()
-            
-            soup = BeautifulSoup(response.content, 'html.parser')
-            
-            # Look for any Porsche entries in recent results
-            result_links = soup.find_all('a', href=re.compile(r'/auctions/[^/]+/$'))
-            
-            for link in result_links:
-                link_text = link.get_text(strip=True).lower()
-                href = link.get('href', '')
+                # If no new listings found, we've reached the end
+                if len(page_urls) == 0:
+                    self.logger.info(f"No more listings found, stopping at page {page}")
+                    break
                 
-                # Check if it's a Porsche 911
-                if ('porsche' in link_text and '911' in link_text) or 'porsche' in href:
-                    full_url = urljoin(self.base_url, href)
-                    if full_url not in listing_urls:
-                        listing_urls.append(full_url)
-                        
-            self.logger.info(f"Found {len(listing_urls)} total listings after browsing results")
-            
-        except Exception as e:
-            self.logger.warning(f"Error browsing results page: {e}")
-        
-        # Fallback: Use known Porsche 911 auction URLs (recent examples)
-        if len(listing_urls) == 0:
-            self.logger.info("No listings found through search, using fallback approach")
-            
-            # Try to get ANY recent auctions and filter them
-            try:
-                driver = self.configure_chrome_driver()
-                driver.get(f"{self.base_url}/auctions/")
-                
-                # Wait for page load
-                WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.TAG_NAME, "body"))
-                )
-                
-                # Get all auction links
-                auction_elements = driver.find_elements(By.CSS_SELECTOR, 'a[href*="/auctions/"]')
-                
-                for element in auction_elements[:20]:  # Limit to first 20
-                    try:
-                        href = element.get_attribute('href')
-                        text = element.text.lower()
-                        
-                        if href and '/auctions/' in href and href.endswith('/'):
-                            # Check if it might be a Porsche
-                            if 'porsche' in text or 'porsche' in href.lower():
-                                if href not in listing_urls:
-                                    listing_urls.append(href)
-                                    
-                    except Exception as e:
-                        continue
-                
-                driver.quit()
-                self.logger.info(f"Found {len(listing_urls)} listings through fallback method")
+                page += 1
+                time.sleep(2)  # Rate limiting between pages
                 
             except Exception as e:
-                self.logger.warning(f"Fallback method failed: {e}")
+                self.logger.error(f"Error fetching page {page}: {e}")
+                break
         
-        # Remove duplicates and return
-        unique_urls = list(set(listing_urls))
-        self.logger.info(f"Found {len(unique_urls)} unique Porsche listings")
-        
-        return unique_urls
+        self.logger.info(f"Found {len(listing_urls)} total Porsche 911 listings")
+        return listing_urls
     
     def extract_vin_from_text(self, text: str) -> Optional[str]:
         """Extract 17-digit VIN from text content."""
@@ -222,10 +138,11 @@ class BaTScraper:
         
         text_lower = text.lower()
         
-        # Current bid
+        # Current bid patterns - updated for BaT's current format
         bid_patterns = [
-            r'\$[\d,]+\s*current bid',
+            r'bid:\s*usd\s*\$[\d,]+',
             r'current bid[:\s]*\$[\d,]+',
+            r'\$[\d,]+\s*current bid',
             r'bid[:\s]*\$[\d,]+',
         ]
         
@@ -280,13 +197,8 @@ class BaTScraper:
             # Get page source and parse
             soup = BeautifulSoup(driver.page_source, 'html.parser')
             
-            # Check if this is actually a Porsche 911
+            # Get page text for analysis
             page_text = soup.get_text(separator=' ', strip=True)
-            page_text_lower = page_text.lower()
-            
-            if not ('porsche' in page_text_lower and '911' in page_text_lower):
-                self.logger.info(f"Not a Porsche 911 listing, skipping: {listing_url}")
-                return None
             
             # Extract basic listing info
             listing_data = {
@@ -360,6 +272,7 @@ class BaTScraper:
                 r'(\d{1,3}(?:,\d{3})*)\s*(?:mile|mi\b)',
                 r'(\d{1,3}(?:,\d{3})*)\s*(?:k|km)\s*(?:mile|mi)',
                 r'showing\s*(\d{1,3}(?:,\d{3})*)',
+                r'odometer[:\s]+(\d{1,3}(?:,\d{3})*)',
             ]
             
             for pattern in mileage_patterns:
@@ -534,13 +447,13 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
             'new_vins': 0,
             'updated_vins': 0,
             'source': 'BringATrailer',
-            'target': 'Porsche 911 (1981+)'
+            'target': 'Porsche 911 (All Years)'
         },
         'listings': []
     }
     
     try:
-        # Search for listings
+        # Search for listings using the dedicated Porsche 911 page
         listing_urls = scraper.search_porsche_911_listings()
         results['metadata']['total_listings_found'] = len(listing_urls)
         
@@ -564,7 +477,7 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
                     results['listings'].append(normalized_record)
                 
                 # Small delay between listings
-                time.sleep(2)
+                time.sleep(3)  # Increased delay to be more respectful
         
         results['metadata']['total_listings_scraped'] = scraped_count
         results['metadata']['listings_with_vins'] = vins_found
