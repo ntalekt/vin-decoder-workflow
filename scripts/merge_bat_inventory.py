@@ -6,11 +6,25 @@ Merge BaT listings with master inventory and maintain BaT-specific inventory.
 
 import argparse
 import json
+import os
 import sys
 from datetime import datetime
 from typing import Dict, Any, List, Optional
 
-from utils import setup_logging, load_json_file, save_json_file, create_timestamp
+from utils import setup_logging, save_json_file, create_timestamp
+
+
+def load_json_file(filename: str) -> Dict[str, Any]:
+    """Load JSON file, return empty dict if file doesn't exist."""
+    if not os.path.exists(filename):
+        print(f"File {filename} doesn't exist, starting with empty inventory")
+        return {}
+    try:
+        with open(filename, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except (json.JSONDecodeError, IOError) as e:
+        print(f"Failed to load {filename}: {e}")
+        return {}
 
 
 def find_existing_record_index(inventory: List[Dict[str, Any]], vin: str) -> Optional[int]:

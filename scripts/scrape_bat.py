@@ -71,10 +71,10 @@ class BaTScraper:
         page = 1
         
         while self.should_continue():
+            # Use more specific search URL
             search_url = f"{self.base_url}/search/"
             params = {
-                'make': 'porsche',
-                'model': '911',
+                'q': 'porsche 911',
                 'year_min': '1981',  # Only 1981+ for 17-digit VINs
                 'page': page
             }
@@ -85,8 +85,11 @@ class BaTScraper:
                 
                 soup = BeautifulSoup(response.content, 'html.parser')
                 
-                # Find listing cards/links
+                # Look for actual auction links, not search results
                 listing_links = soup.find_all('a', href=re.compile(r'/auctions/[^/]+/$'))
+                # Exclude results pages and search pages
+                listing_links = [link for link in listing_links 
+                               if '/results/' not in link.get('href', '') and '/search/' not in link.get('href', '')]
                 
                 if not listing_links:
                     self.logger.info(f"No more listings found on page {page}")
