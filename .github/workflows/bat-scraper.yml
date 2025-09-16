@@ -44,11 +44,44 @@ jobs:
       
       - name: Install ChromeDriver
         run: |
-          CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d'.' -f1-3)
-          DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
-          curl -L -o chromedriver.zip "https://chromedriver.storage.googleapis.com/$DRIVER_VERSION/chromedriver_linux64.zip"
+          # Get Chrome version more reliably
+          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
+          echo "Chrome version: $CHROME_VERSION"
+          
+          # Extract major version for ChromeDriver compatibility
+          CHROME_MAJOR=$(echo $CHROME_VERSION | cut -d'.' -f1)
+          echo "Chrome major version: $CHROME_MAJOR"
+          
+          # Download and install ChromeDriver
+          if [ "$CHROME_MAJOR" -ge "115" ]; then
+            # For Chrome 115+ use the new ChromeDriver API
+            DRIVER_VERSION=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_$CHROME_MAJOR")
+            DRIVER_URL="https://storage.googleapis.com/chrome-for-testing-public/$DRIVER_VERSION/linux64/chromedriver-linux64.zip"
+          else
+            # For older Chrome versions use legacy API
+            DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_MAJOR")
+            DRIVER_URL="https://chromedriver.storage.googleapis.com/$DRIVER_VERSION/chromedriver_linux64.zip"
+          fi
+          
+          echo "ChromeDriver version: $DRIVER_VERSION"
+          echo "Download URL: $DRIVER_URL"
+          
+          # Download and install
+          curl -L -o chromedriver.zip "$DRIVER_URL"
           sudo unzip chromedriver.zip -d /usr/local/bin/
+          
+          # Handle different archive structures
+          if [ -f /usr/local/bin/chromedriver-linux64/chromedriver ]; then
+            sudo mv /usr/local/bin/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
+            sudo rm -rf /usr/local/bin/chromedriver-linux64
+          fi
+          
           sudo chmod +x /usr/local/bin/chromedriver
+          rm chromedriver.zip
+          
+          # Verify installation
+          chromedriver --version
+
       
       - name: Install Python dependencies
         run: |
