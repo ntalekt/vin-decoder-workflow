@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
-
 """
 Bring a Trailer scraper for Porsche 911 listings (1981+).
+- Scrapes both Live Auctions and Auction Results sections
+- Clicks all Show More buttons to load complete inventory
+- Only accepts cars with valid WP0* VINs (no parts/memorabilia)
+- Enforces YYYY-porsche-911-* URL pattern for 1981+ models
 """
 
 import argparse
@@ -62,8 +65,11 @@ class BaTScraper:
         return elapsed < self.max_runtime
     
     def search_porsche_911_listings(self) -> List[str]:
-        """Search for Porsche 911 listings by finding ALL listing links on the page."""
-        self.logger.info("Searching for Porsche 911 listings on BaT")
+        """
+        Search for Porsche 911 listings from both Live Auctions and Auction Results.
+        Clicks all Show More buttons until no more content loads.
+        """
+        self.logger.info("Searching for Porsche 911 listings on BaT (Live + Results)")
         listing_urls = []
         driver = None
         
@@ -83,99 +89,107 @@ class BaTScraper:
             # Give the page time to fully load
             time.sleep(5)
             
-            # FIXED: Look for /listing/ links instead of /auctions/ links
-            all_listing_links = driver.find_elements(By.CSS_SELECTOR, 'a[href*="/listing/"]')
-            self.logger.info(f"DEBUG: Found {len(all_listing_links)} total listing links on page")
+            def collect_current_listings():
+                """Collect all valid listing URLs currently visible on page."""
+                current_links = driver.find_elements(By.CSS_SELECTOR, 'a[href*="/listing/"]')
+                new_urls = []
+                
+                for link in current_links:
+                    try:
+                        href = link.get_attribute('href')
+                        if href and self.is_valid_listing_url(href) and href not in listing_urls:
+                            new_urls.append(href)
+                            self.logger.info(f"DEBUG: Added valid listing: {href}")
+                    except Exception as e:
+                        self.logger.debug(f"Error processing link: {e}")
+                        continue
+                
+                listing_urls.extend(new_urls)
+                return len(new_urls)
             
-            # Show first few listing links for debugging
-            for i, link in enumerate(all_listing_links[:10]):
-                try:
-                    href = link.get_attribute('href')
-                    text = link.text.strip()
-                    self.logger.info(f"DEBUG: Listing link {i+1}: {href} - Text: '{text}'")
-                except:
-                    continue
+            # Initial collection
+            initial_count = collect_current_listings()
+            self.logger.info(f"Initial collection: {initial_count} valid listings found")
             
-            for link in all_listing_links:
-                try:
-                    href = link.get_attribute('href')
-                    self.logger.info(f"DEBUG: Checking URL: {href}")
-                    if href and self.is_valid_listing_url(href):
-                        listing_urls.append(href)
-                        self.logger.info(f"DEBUG: Added valid listing link: {href}")
-                    else:
-                        self.logger.info(f"DEBUG: Rejected URL: {href}")
-                except Exception as e:
-                    self.logger.info(f"DEBUG: Error processing link: {e}")
-                    continue
-            
-            # Try clicking Show More buttons to load additional content
+            # Keep clicking Show More buttons until no more content loads
             show_more_clicks = 0
-            max_clicks = 5
+            max_clicks = 50  # Increased to handle both sections
+            consecutive_empty_clicks = 0
             
-            while show_more_clicks < max_clicks and self.should_continue():
+            while show_more_clicks < max_clicks and consecutive_empty_clicks < 3 and self.should_continue():
                 try:
-                    # Find any Show More button on the page
-                    show_more_buttons = driver.find_elements(By.XPATH, "//*[contains(text(), 'Show More') or contains(text(), 'Load More')]")
-                    self.logger.info(f"DEBUG: Found {len(show_more_buttons)} Show More buttons")
+                    # Find all Show More / Load More buttons
+                    show_more_buttons = driver.find_elements(
+                        By.XPATH, 
+                        "//*[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'show more') or "
+                        "contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'load more') or "
+                        "contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'view more')]"
+                    )
                     
+                    self.logger.info(f"DEBUG: Found {len(show_more_buttons)} potential Show More buttons")
+                    
+                    # Find a clickable button
                     clickable_button = None
                     for i, button in enumerate(show_more_buttons):
                         try:
                             button_text = button.text.strip()
                             is_displayed = button.is_displayed()
                             is_enabled = button.is_enabled()
+                            
                             self.logger.info(f"DEBUG: Button {i+1}: '{button_text}' - Displayed: {is_displayed}, Enabled: {is_enabled}")
                             
-                            if is_displayed and is_enabled:
+                            if is_displayed and is_enabled and button_text:
                                 clickable_button = button
                                 break
                         except Exception as e:
-                            self.logger.info(f"DEBUG: Error checking button {i+1}: {e}")
+                            self.logger.debug(f"Error checking button {i+1}: {e}")
                             continue
                     
                     if not clickable_button:
-                        self.logger.info("DEBUG: No more clickable Show More buttons found")
+                        self.logger.info("No more clickable Show More buttons found")
                         break
                     
-                    self.logger.info(f"DEBUG: Clicking Show More button (click #{show_more_clicks + 1})")
+                    # Record current count before clicking
+                    pre_click_count = len(listing_urls)
                     
-                    # Scroll and click
-                    driver.execute_script("arguments[0].scrollIntoView(true);", clickable_button)
+                    self.logger.info(f"DEBUG: Clicking Show More button #{show_more_clicks + 1}: '{clickable_button.text.strip()}'")
+                    
+                    # Scroll to button and click
+                    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", clickable_button)
                     time.sleep(1)
+                    
                     try:
                         clickable_button.click()
-                    except:
+                    except Exception:
+                        # Fallback to JavaScript click
                         driver.execute_script("arguments[0].click();", clickable_button)
                     
-                    time.sleep(4)  # Wait for content to load
+                    # Wait for content to load
+                    time.sleep(4)
                     
-                    # Check for new listing links
-                    new_listing_links = driver.find_elements(By.CSS_SELECTOR, 'a[href*="/listing/"]')
-                    initial_count = len(listing_urls)
-                    self.logger.info(f"DEBUG: After clicking, found {len(new_listing_links)} total listing links")
+                    # Collect new listings
+                    new_listings_count = collect_current_listings()
+                    post_click_count = len(listing_urls)
+                    actual_new = post_click_count - pre_click_count
                     
-                    for link in new_listing_links:
-                        try:
-                            href = link.get_attribute('href')
-                            if href and self.is_valid_listing_url(href) and href not in listing_urls:
-                                listing_urls.append(href)
-                                self.logger.info(f"DEBUG: Found new listing link: {href}")
-                        except:
-                            continue
+                    self.logger.info(f"DEBUG: After clicking, found {actual_new} new listings (total: {post_click_count})")
                     
-                    new_count = len(listing_urls) - initial_count
-                    self.logger.info(f"DEBUG: Found {new_count} new listing links after clicking Show More")
-                    
-                    if new_count == 0:
-                        break
+                    if actual_new == 0:
+                        consecutive_empty_clicks += 1
+                        self.logger.info(f"No new listings found (empty click #{consecutive_empty_clicks})")
+                    else:
+                        consecutive_empty_clicks = 0  # Reset counter
                     
                     show_more_clicks += 1
                     
                 except Exception as e:
-                    self.logger.warning(f"DEBUG: Error clicking Show More: {e}")
-                    break
-        
+                    self.logger.warning(f"Error during Show More click #{show_more_clicks + 1}: {e}")
+                    consecutive_empty_clicks += 1
+                    show_more_clicks += 1
+                    continue
+            
+            self.logger.info(f"Finished clicking Show More buttons after {show_more_clicks} attempts")
+            
         except Exception as e:
             self.logger.error(f"Error loading Porsche 911 page: {e}")
         
@@ -186,39 +200,30 @@ class BaTScraper:
                 except:
                     pass
         
-        # Remove duplicates
+        # Remove duplicates while preserving order
         unique_urls = list(dict.fromkeys(listing_urls))
-        self.logger.info(f"Found {len(unique_urls)} unique Porsche 911 listings")
+        self.logger.info(f"Final collection: {len(unique_urls)} unique Porsche 911 listings")
         
         return unique_urls
     
     def is_valid_listing_url(self, url: str) -> bool:
-        """Check if URL is a valid individual BaT listing for a 1981+ Porsche 911."""
-        self.logger.info(f"DEBUG: Validating listing URL: {url}")
-        
-        if not url:
-            self.logger.info("DEBUG: URL is empty")
-            return False
-        
-        # Must contain /listing/
-        if '/listing/' not in url:
-            self.logger.info("DEBUG: URL doesn't contain /listing/")
+        """
+        Check if URL is a valid BaT listing for a 1981+ Porsche 911.
+        Must match exact pattern: YYYY-porsche-911-*
+        """
+        if not url or '/listing/' not in url:
             return False
         
         try:
             parsed = urlparse(url)
             path_parts = [p for p in parsed.path.split('/') if p]
-            self.logger.info(f"DEBUG: URL path parts: {path_parts}")
             
-            # Should have at least 2 parts: ['listing', 'listing-name']
             if len(path_parts) >= 2 and path_parts[0] == 'listing':
                 listing_name = path_parts[1]
                 
-                # STRICTER FILTERING: Must follow exact pattern YYYY-porsche-911-*
-                # This will only match listings like: 1988-porsche-911-carrera-coupe-80
+                # STRICT PATTERN: Must be YYYY-porsche-911-*
                 pattern = r'^(19[8-9]\d|20[0-2]\d)-porsche-911-'
                 if not re.match(pattern, listing_name, re.IGNORECASE):
-                    self.logger.info(f"DEBUG: Listing doesn't match YYYY-porsche-911- pattern: {listing_name}")
                     return False
                 
                 # Extract and validate year
@@ -226,29 +231,27 @@ class BaTScraper:
                 if year_match:
                     year = int(year_match.group(1))
                     if year < 1981:
-                        self.logger.info(f"DEBUG: Year {year} is before 1981, skipping")
                         return False
                 
-                self.logger.info(f"DEBUG: Valid 1981+ Porsche 911 listing URL: {url}")
                 return True
-            else:
-                self.logger.info(f"DEBUG: Invalid path structure: {path_parts}")
         
         except Exception as e:
-            self.logger.info(f"DEBUG: Error parsing URL: {e}")
+            self.logger.debug(f"Error parsing URL {url}: {e}")
             return False
         
         return False
     
     def extract_vin_from_text(self, text: str) -> Optional[str]:
-        """Extract 17-digit VIN from text content."""
+        """Extract 17-digit VIN starting with WP0 from text content."""
         # Pattern for 17-digit VIN
         vin_pattern = r'\b[A-HJ-NPR-Z0-9]{17}\b'
         matches = re.findall(vin_pattern, text, re.IGNORECASE)
         
         for match in matches:
-            if validate_vin(match.upper()):
-                return match.upper()
+            vin = match.upper()
+            # Only accept Porsche VINs starting with WP0
+            if vin.startswith('WP0') and validate_vin(vin):
+                return vin
         
         return None
     
@@ -264,7 +267,7 @@ class BaTScraper:
         
         text_lower = text.lower()
         
-        # Current bid patterns - updated for BaT's current format
+        # Current bid patterns
         bid_patterns = [
             r'bid:\s*usd\s*\$[\d,]+',
             r'current bid[:\s]*\$[\d,]+',
@@ -287,11 +290,12 @@ class BaTScraper:
         if 'no reserve' in text_lower or 'no-reserve' in text_lower:
             price_info['no_reserve'] = True
         
-        # Sold price
+        # Sold price (for auction results)
         sold_patterns = [
             r'sold for \$[\d,]+',
             r'winning bid[:\s]*\$[\d,]+',
             r'final bid[:\s]*\$[\d,]+',
+            r'hammer price[:\s]*\$[\d,]+',
         ]
         
         for pattern in sold_patterns:
@@ -310,11 +314,6 @@ class BaTScraper:
             return None
         
         self.logger.info(f"Scraping listing: {listing_url}")
-        
-        # Skip if it's not a valid listing URL
-        if not self.is_valid_listing_url(listing_url):
-            self.logger.warning(f"Invalid listing URL, skipping: {listing_url}")
-            return None
         
         driver = None
         try:
@@ -340,6 +339,18 @@ class BaTScraper:
                 self.logger.info(f"Not a Porsche 911 listing, skipping: {listing_url}")
                 return None
             
+            # CRITICAL: Extract VIN and verify it's a WP0 VIN
+            vin = self.extract_vin_from_text(page_text)
+            if not vin:
+                self.logger.info(f"No valid WP0 VIN found, skipping: {listing_url}")
+                return None
+            
+            if vin in self.processed_vins:
+                self.logger.info(f"VIN {vin} already processed, skipping")
+                return None
+            
+            self.processed_vins.add(vin)
+            
             # Extract basic listing info
             listing_data = {
                 'url': listing_url,
@@ -350,11 +361,11 @@ class BaTScraper:
                 'year': '',
                 'make': 'PORSCHE',
                 'model': '911',
-                'vin': '',
+                'vin': vin,
                 'mileage': '',
                 'location': '',
                 'seller_type': '',
-                'auction_status': 'active',
+                'auction_status': 'unknown',
                 'end_date': '',
                 'price_info': {},
                 'description': '',
@@ -371,6 +382,14 @@ class BaTScraper:
             if len(url_parts) > 2:
                 listing_data['listing_id'] = url_parts[2]
             
+            # Determine if this is an active auction or completed result
+            if 'sold for' in page_text_lower or 'winning bid' in page_text_lower or 'hammer price' in page_text_lower:
+                listing_data['auction_status'] = 'sold'
+            elif 'current bid' in page_text_lower or 'bid:' in page_text_lower:
+                listing_data['auction_status'] = 'active'
+            else:
+                listing_data['auction_status'] = 'ended'
+            
             # Title and basic info
             title_selectors = ['h1', '.listing-title', '.auction-title', 'title']
             for selector in title_selectors:
@@ -384,27 +403,6 @@ class BaTScraper:
                         if year_match:
                             listing_data['year'] = year_match.group()
                         break
-            
-            # Try to extract VIN
-            vin = self.extract_vin_from_text(page_text)
-            if not vin:
-                # If no VIN found, create a synthetic one based on URL for tracking
-                listing_id = listing_data['listing_id']
-                if listing_id:
-                    # Create a tracking identifier (not a real VIN)
-                    synthetic_id = f"BAT{listing_id.upper()[:13].replace('-', '').zfill(13)}"
-                    self.logger.warning(f"No VIN found, using synthetic ID: {synthetic_id}")
-                    vin = synthetic_id
-                else:
-                    self.logger.warning(f"No VIN or valid listing ID found: {listing_url}")
-                    return None
-            
-            if vin in self.processed_vins:
-                self.logger.info(f"VIN/ID {vin} already processed, skipping")
-                return None
-            
-            listing_data['vin'] = vin
-            self.processed_vins.add(vin)
             
             # Price information
             listing_data['price_info'] = self.extract_price_from_text(page_text)
@@ -506,7 +504,7 @@ class BaTScraper:
             
             listing_data['photos'] = photo_urls[:20]
             
-            self.logger.info(f"Successfully scraped listing for VIN/ID {vin}")
+            self.logger.info(f"Successfully scraped listing for VIN {vin} (Status: {listing_data['auction_status']})")
             return listing_data
             
         except Exception as e:
@@ -581,6 +579,7 @@ class BaTScraper:
         
         return normalized
 
+
 def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
     """Scrape BaT for Porsche 911 listings."""
     logger = setup_logging()
@@ -598,7 +597,7 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
             'new_vins': 0,
             'updated_vins': 0,
             'source': 'BringATrailer',
-            'target': 'Porsche 911 (All Years)'
+            'target': 'Porsche 911 (1981+) - Live Auctions + Auction Results'
         },
         'listings': []
     }
@@ -627,7 +626,7 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
                 results['listings'].append(normalized_record)
                 
                 # Small delay between listings
-                time.sleep(4)  # Increased delay to be respectful
+                time.sleep(3)  # Respectful delay
         
         results['metadata']['total_listings_scraped'] = scraped_count
         results['metadata']['listings_with_vins'] = vins_found
@@ -645,6 +644,7 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
         results['metadata']['scrape_completed'] = create_timestamp()
     
     return results
+
 
 def main():
     """Main function."""
@@ -673,9 +673,21 @@ def main():
         print(f"⏱️ Runtime: {metadata['runtime_minutes']} minutes")
         print(f"🔍 Listings found: {metadata['total_listings_found']}")
         print(f"📊 Listings scraped: {metadata['total_listings_scraped']}")
-        print(f"🚗 VINs collected: {metadata['listings_with_vins']}")
+        print(f"🚗 Valid WP0 VINs collected: {metadata['listings_with_vins']}")
         
+        # Show status breakdown
         if results['listings']:
+            active_count = sum(1 for listing in results['listings'] 
+                             if listing.get('bat_auction_status') == 'active')
+            sold_count = sum(1 for listing in results['listings'] 
+                           if listing.get('bat_auction_status') == 'sold')
+            ended_count = sum(1 for listing in results['listings'] 
+                            if listing.get('bat_auction_status') == 'ended')
+            
+            print(f"📈 Active auctions: {active_count}")
+            print(f"✅ Sold auctions: {sold_count}")
+            print(f"⏹️ Ended auctions: {ended_count}")
+            
             years = [int(listing.get('model_year', '0')) for listing in results['listings'] 
                     if listing.get('model_year', '').isdigit()]
             if years:
@@ -687,6 +699,7 @@ def main():
         logger.error(f"BaT scraping failed: {e}")
         print(f"❌ Error: {e}", file=sys.stderr)
         return 1
+
 
 if __name__ == '__main__':
     sys.exit(main())
