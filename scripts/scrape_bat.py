@@ -70,7 +70,7 @@ class BaTScraper:
         Clicks all Show More buttons until no more content loads.
         """
         self.logger.info("Searching for Porsche 911 listings on BaT (Live + Results)")
-        listing_urls = []
+        listing_urls = set()  # Use set to prevent duplicates automatically
         driver = None
         
         try:
@@ -92,20 +92,22 @@ class BaTScraper:
             def collect_current_listings():
                 """Collect all valid listing URLs currently visible on page."""
                 current_links = driver.find_elements(By.CSS_SELECTOR, 'a[href*="/listing/"]')
-                new_urls = []
+                new_urls_added = 0
                 
                 for link in current_links:
                     try:
                         href = link.get_attribute('href')
-                        if href and self.is_valid_listing_url(href) and href not in listing_urls:
-                            new_urls.append(href)
-                            self.logger.info(f"DEBUG: Added valid listing: {href}")
+                        if href and self.is_valid_listing_url(href):
+                            # Add to set - duplicates will be automatically ignored
+                            if href not in listing_urls:
+                                listing_urls.add(href)
+                                new_urls_added += 1
+                                self.logger.info(f"DEBUG: Added valid listing: {href}")
                     except Exception as e:
                         self.logger.debug(f"Error processing link: {e}")
                         continue
                 
-                listing_urls.extend(new_urls)
-                return len(new_urls)
+                return new_urls_added
             
             # Initial collection
             initial_count = collect_current_listings()
@@ -200,8 +202,8 @@ class BaTScraper:
                 except:
                     pass
         
-        # Remove duplicates while preserving order
-        unique_urls = list(dict.fromkeys(listing_urls))
+        # Convert set to list for return
+        unique_urls = list(listing_urls)
         self.logger.info(f"Final collection: {len(unique_urls)} unique Porsche 911 listings")
         
         return unique_urls
@@ -308,6 +310,57 @@ class BaTScraper:
         
         return price_info
     
+    def determine_auction_status(self, page_text: str) -> str:
+        """Determine if this is an active auction, sold auction, or ended without sale."""
+        text_lower = page_text.lower()
+        
+        # Check for sold indicators first (most definitive)
+        sold_indicators = [
+            'sold for $',
+            'winning bid:',
+            'final bid:',
+            'hammer price:',
+            'sale completed',
+            'auction ended',
+            'congratulations to'
+        ]
+        
+        for indicator in sold_indicators:
+            if indicator in text_lower:
+                return 'sold'
+        
+        # Check for active auction indicators
+        active_indicators = [
+            'current bid:',
+            'bid: usd $',
+            'time left:',
+            'days left',
+            'hours left',
+            'minutes left',
+            'bidding ends',
+            'reserve not met',
+            'reserve met'
+        ]
+        
+        for indicator in active_indicators:
+            if indicator in text_lower:
+                return 'active'
+        
+        # Check for ended without sale
+        ended_indicators = [
+            'reserve not met',
+            'auction ended without sale',
+            'no sale',
+            'did not meet reserve'
+        ]
+        
+        for indicator in ended_indicators:
+            if indicator in text_lower:
+                return 'ended'
+        
+        # Default to unknown if we can't determine
+        return 'unknown'
+    
     def scrape_listing_details(self, listing_url: str) -> Optional[Dict[str, Any]]:
         """Scrape detailed information from a BaT listing."""
         if not self.should_continue():
@@ -382,13 +435,8 @@ class BaTScraper:
             if len(url_parts) > 2:
                 listing_data['listing_id'] = url_parts[2]
             
-            # Determine if this is an active auction or completed result
-            if 'sold for' in page_text_lower or 'winning bid' in page_text_lower or 'hammer price' in page_text_lower:
-                listing_data['auction_status'] = 'sold'
-            elif 'current bid' in page_text_lower or 'bid:' in page_text_lower:
-                listing_data['auction_status'] = 'active'
-            else:
-                listing_data['auction_status'] = 'ended'
+            # Determine auction status using improved logic
+            listing_data['auction_status'] = self.determine_auction_status(page_text)
             
             # Title and basic info
             title_selectors = ['h1', '.listing-title', '.auction-title', 'title']
@@ -683,10 +731,13 @@ def main():
                            if listing.get('bat_auction_status') == 'sold')
             ended_count = sum(1 for listing in results['listings'] 
                             if listing.get('bat_auction_status') == 'ended')
+            unknown_count = sum(1 for listing in results['listings'] 
+                              if listing.get('bat_auction_status') == 'unknown')
             
             print(f"📈 Active auctions: {active_count}")
             print(f"✅ Sold auctions: {sold_count}")
             print(f"⏹️ Ended auctions: {ended_count}")
+            print(f"❓ Unknown status: {unknown_count}")
             
             years = [int(listing.get('model_year', '0')) for listing in results['listings'] 
                     if listing.get('model_year', '').isdigit()]
