@@ -2,7 +2,7 @@
 """
 Bring a Trailer scraper for Porsche 911 listings (1981+).
 - Scrapes from BOTH the main /porsche/911/ page AND the auction results search
-- Gets comprehensive historical data by using BaT's search functionality
+- Gets comprehensive historical data by using BaT's search functionality with improved pagination
 - Only accepts cars with valid WP0* VINs (no parts/memorabilia)
 - Enforces YYYY-porsche-911-* URL pattern for 1981+ models
 """
@@ -66,8 +66,8 @@ class BaTScraper:
     
     def search_auction_results(self) -> List[str]:
         """
-        Search the auction results page for Porsche 911 listings with pagination.
-        This gets access to the full historical archive.
+        Search the auction results page for Porsche 911 listings with aggressive pagination.
+        This gets access to the full historical archive by clicking all Show More buttons.
         """
         self.logger.info("Searching auction results for Porsche 911 historical data")
         listing_urls = set()
@@ -110,46 +110,109 @@ class BaTScraper:
             initial_count = collect_results_page()
             self.logger.info(f"Initial auction results collection: {initial_count} valid listings")
             
-            # Look for pagination and load more results
+            # Enhanced pagination detection and clicking
             page_clicks = 0
-            max_pages = 50  # Limit to prevent infinite loops
+            max_pages = 100  # Increased limit for full historical data
+            consecutive_fails = 0
+            max_consecutive_fails = 3
             
-            while page_clicks < max_pages and self.should_continue():
+            while page_clicks < max_pages and consecutive_fails < max_consecutive_fails and self.should_continue():
                 try:
-                    # Look for "Load More" or "Next Page" buttons
-                    load_more_buttons = driver.find_elements(
-                        By.XPATH,
-                        "//*[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'load more') or "
-                        "contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'next') or "
-                        "contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'see more')]"
-                    )
+                    # Multiple strategies to find Show More buttons
+                    show_more_selectors = [
+                        # Text-based searches
+                        "//*[contains(text(), 'Show More')]",
+                        "//*[contains(text(), 'Load More')]",
+                        "//*[contains(text(), 'See More')]",
+                        "//*[contains(text(), 'View More')]",
+                        # Case insensitive
+                        "//*[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'show more')]",
+                        "//*[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'load more')]",
+                        # Button-specific selectors
+                        "//button[contains(text(), 'Show More')]",
+                        "//button[contains(text(), 'Load More')]",
+                        "//a[contains(text(), 'Show More')]",
+                        "//a[contains(text(), 'Load More')]",
+                        # Class-based searches (common patterns)
+                        "//*[contains(@class, 'show-more')]",
+                        "//*[contains(@class, 'load-more')]",
+                        "//*[contains(@class, 'more-results')]",
+                        # ID-based searches
+                        "//*[contains(@id, 'show-more')]",
+                        "//*[contains(@id, 'load-more')]"
+                    ]
                     
                     clickable_button = None
-                    for button in load_more_buttons:
+                    button_info = ""
+                    
+                    # Try each selector until we find a clickable button
+                    for selector in show_more_selectors:
                         try:
-                            if button.is_displayed() and button.is_enabled():
-                                clickable_button = button
+                            buttons = driver.find_elements(By.XPATH, selector)
+                            self.logger.info(f"DEBUG: Selector '{selector}' found {len(buttons)} elements")
+                            
+                            for i, button in enumerate(buttons):
+                                try:
+                                    button_text = button.text.strip()
+                                    tag_name = button.tag_name
+                                    is_displayed = button.is_displayed()
+                                    is_enabled = button.is_enabled()
+                                    
+                                    self.logger.info(f"DEBUG: Button {i+1}: <{tag_name}> '{button_text}' - Displayed: {is_displayed}, Enabled: {is_enabled}")
+                                    
+                                    if is_displayed and is_enabled and button_text:
+                                        clickable_button = button
+                                        button_info = f"<{tag_name}> '{button_text}' via selector: {selector}"
+                                        break
+                                except Exception as e:
+                                    self.logger.debug(f"Error checking button {i+1}: {e}")
+                                    continue
+                            
+                            if clickable_button:
                                 break
-                        except:
+                                
+                        except Exception as e:
+                            self.logger.debug(f"Error with selector '{selector}': {e}")
                             continue
                     
                     if not clickable_button:
-                        self.logger.info("No more pagination buttons found in results")
+                        self.logger.info("No more clickable Show More buttons found - exhausted pagination")
                         break
                     
+                    # Record counts before clicking
                     pre_click_count = len(listing_urls)
-                    self.logger.info(f"Clicking pagination button #{page_clicks + 1}")
+                    self.logger.info(f"DEBUG: Clicking pagination button #{page_clicks + 1}: {button_info}")
                     
-                    # Scroll and click
-                    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", clickable_button)
-                    time.sleep(1)
+                    # Enhanced clicking with multiple attempts
+                    click_successful = False
+                    for attempt in range(3):
+                        try:
+                            # Scroll button into view
+                            driver.execute_script("arguments[0].scrollIntoView({block: 'center', behavior: 'smooth'});", clickable_button)
+                            time.sleep(1)
+                            
+                            # Try regular click first
+                            try:
+                                clickable_button.click()
+                                click_successful = True
+                                break
+                            except Exception:
+                                # Fallback to JavaScript click
+                                driver.execute_script("arguments[0].click();", clickable_button)
+                                click_successful = True
+                                break
+                        except Exception as e:
+                            self.logger.warning(f"Click attempt {attempt + 1} failed: {e}")
+                            time.sleep(1)
+                            continue
                     
-                    try:
-                        clickable_button.click()
-                    except:
-                        driver.execute_script("arguments[0].click();", clickable_button)
+                    if not click_successful:
+                        self.logger.warning("All click attempts failed, moving to next iteration")
+                        consecutive_fails += 1
+                        continue
                     
-                    time.sleep(4)  # Wait for new results to load
+                    # Wait longer for content to load (auction results can be slow)
+                    time.sleep(6)
                     
                     # Collect new results
                     new_results = collect_results_page()
@@ -159,15 +222,19 @@ class BaTScraper:
                     self.logger.info(f"Found {actual_new} new auction results (total: {post_click_count})")
                     
                     if actual_new == 0:
-                        break
+                        consecutive_fails += 1
+                        self.logger.info(f"No new results found (consecutive fail #{consecutive_fails})")
+                    else:
+                        consecutive_fails = 0  # Reset on success
                     
                     page_clicks += 1
                     
                 except Exception as e:
-                    self.logger.warning(f"Error clicking pagination: {e}")
-                    break
+                    self.logger.warning(f"Error clicking pagination button #{page_clicks + 1}: {e}")
+                    consecutive_fails += 1
+                    continue
             
-            self.logger.info(f"Auction results search completed after {page_clicks} pages")
+            self.logger.info(f"Auction results search completed after {page_clicks} pages with {consecutive_fails} consecutive fails")
             
         except Exception as e:
             self.logger.error(f"Error searching auction results: {e}")
@@ -244,7 +311,7 @@ class BaTScraper:
             # Initial collection
             collect_main_listings()
             
-            # Try clicking Show More buttons
+            # Try clicking Show More buttons on main page
             show_more_clicks = 0
             max_clicks = 10
             
@@ -540,8 +607,101 @@ class BaTScraper:
             # Price information
             listing_data['price_info'] = self.extract_price_from_text(page_text)
             
-            # Basic extraction for other fields...
-            # (keeping this concise for the main improvement)
+            # Extract full details for comprehensive data collection
+            # Mileage
+            mileage_patterns = [
+                r'(\d{1,3}(?:,\d{3})*)\s*(?:mile|mi\b)',
+                r'showing\s*(\d{1,3}(?:,\d{3})*)',
+                r'odometer[:\s]+(\d{1,3}(?:,\d{3})*)',
+            ]
+            
+            for pattern in mileage_patterns:
+                match = re.search(pattern, page_text.lower())
+                if match:
+                    listing_data['mileage'] = match.group(1)
+                    break
+            
+            # Location
+            location_patterns = [
+                r'(?:location|located)[:\s]+([^,\n]+(?:,\s*[A-Z]{2})?)',
+                r'seller[:\s]+[^,\n]+[,\s]+([^,\n]+(?:,\s*[A-Z]{2})?)',
+            ]
+            
+            for pattern in location_patterns:
+                match = re.search(pattern, page_text, re.IGNORECASE)
+                if match:
+                    listing_data['location'] = match.group(1).strip()
+                    break
+            
+            # Specifications
+            specs_text = page_text.lower()
+            
+            # Engine
+            engine_patterns = [
+                r'(\d\.\d)\s*(?:l|liter)',
+                r'(\d,?\d{3})\s*cc',
+            ]
+            
+            for pattern in engine_patterns:
+                match = re.search(pattern, specs_text)
+                if match:
+                    listing_data['specifications']['engine'] = match.group(1)
+                    break
+            
+            # Transmission
+            if any(word in specs_text for word in ['manual', 'stick', '5-speed', '6-speed']):
+                listing_data['specifications']['transmission'] = 'Manual'
+            elif any(word in specs_text for word in ['automatic', 'tiptronic', 'pdk']):
+                listing_data['specifications']['transmission'] = 'Automatic'
+            
+            # Drive type
+            if any(word in specs_text for word in ['carrera 4', 'c4', 'awd', 'all-wheel']):
+                listing_data['specifications']['drive_type'] = 'AWD'
+            else:
+                listing_data['specifications']['drive_type'] = 'RWD'
+            
+            # Features
+            features = []
+            feature_keywords = [
+                'sport chrono', 'pasm', 'pdls', 'pccb', 'sport exhaust',
+                'sunroof', 'navigation', 'heated seats', 'air conditioning',
+                'leather', 'alcantara', 'bose', 'xenon', 'led'
+            ]
+            
+            for keyword in feature_keywords:
+                if keyword in specs_text:
+                    features.append(keyword.title())
+            
+            listing_data['features'] = features
+            
+            # Description
+            description_selectors = [
+                'div[class*="description"]',
+                'div[class*="summary"]',
+                'div[class*="content"]',
+                '.listing-description',
+                '.auction-description'
+            ]
+            
+            for selector in description_selectors:
+                description_elem = soup.select_one(selector)
+                if description_elem:
+                    description = description_elem.get_text(strip=True)[:1000]
+                    if len(description) > 20:
+                        listing_data['description'] = description
+                        break
+            
+            # Photos
+            img_tags = soup.find_all('img')
+            photo_urls = []
+            for img in img_tags:
+                src = img.get('src') or img.get('data-src')
+                if src and ('bringatrailer' in src or src.startswith('/')):
+                    if src.startswith('/'):
+                        src = urljoin(self.base_url, src)
+                    photo_urls.append(src)
+            
+            listing_data['photos'] = photo_urls[:20]
             
             self.logger.info(f"Successfully scraped listing for VIN {vin} (Status: {listing_data['auction_status']})")
             return listing_data
@@ -576,15 +736,30 @@ class BaTScraper:
             'model_year': str(year) if year > 0 else '',
             'manufacturer': 'DR. ING. H.C.F. PORSCHE AG',
             
+            # Vehicle specifications
+            'body_class': 'Coupe',
+            'doors': '2',
+            'fuel_type': 'Gasoline',
+            'engine_cylinders': '6',
+            'displacement_l': listing_data.get('specifications', {}).get('engine', ''),
+            'drive_type': listing_data.get('specifications', {}).get('drive_type', ''),
+            
             # BaT specific data
             'bat_listing_id': listing_data.get('listing_id', ''),
             'bat_url': listing_data.get('url', ''),
             'bat_title': listing_data.get('title', ''),
+            'bat_mileage': listing_data.get('mileage', ''),
+            'bat_location': listing_data.get('location', ''),
             'bat_auction_status': listing_data.get('auction_status', ''),
+            'bat_end_date': listing_data.get('end_date', ''),
             'bat_description': listing_data.get('description', ''),
+            'bat_features': listing_data.get('features', []),
+            'bat_photo_count': len(listing_data.get('photos', [])),
             
             # Price information
             'bat_current_bid': listing_data.get('price_info', {}).get('current_bid', ''),
+            'bat_reserve_met': listing_data.get('price_info', {}).get('reserve_met', False),
+            'bat_no_reserve': listing_data.get('price_info', {}).get('no_reserve', False),
             'bat_sold_price': listing_data.get('price_info', {}).get('sold_price', ''),
             
             # Metadata
@@ -600,7 +775,6 @@ class BaTScraper:
         }
         
         return normalized
-
 
 def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
     """Scrape BaT for Porsche 911 listings."""
@@ -648,7 +822,7 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
                 results['listings'].append(normalized_record)
                 
                 # Small delay between listings
-                time.sleep(2)  # Faster since we're getting more listings
+                time.sleep(2)
         
         results['metadata']['total_listings_scraped'] = scraped_count
         results['metadata']['listings_with_vins'] = vins_found
@@ -666,7 +840,6 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
         results['metadata']['scrape_completed'] = create_timestamp()
     
     return results
-
 
 def main():
     """Main function."""
@@ -724,7 +897,6 @@ def main():
         logger.error(f"BaT scraping failed: {e}")
         print(f"❌ Error: {e}", file=sys.stderr)
         return 1
-
 
 if __name__ == '__main__':
     sys.exit(main())
