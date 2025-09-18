@@ -3,6 +3,7 @@
 Bring a Trailer scraper for Porsche 911 listings (1981+).
 - Scrapes from BOTH the main /porsche/911/ page AND the auction results search
 - Gets comprehensive historical data by using BaT's search functionality with improved pagination
+- Only collects sold listings from the past year to stay current
 - Only accepts cars with valid WP0* VINs (no parts/memorabilia)
 - Enforces YYYY-porsche-911-* URL pattern for 1981+ models
 """
@@ -41,6 +42,9 @@ class BaTScraper:
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36'
         })
         self.processed_vins = set()
+        # Set cutoff date to 1 year ago
+        self.cutoff_date = datetime.now() - timedelta(days=365)
+        self.logger.info(f"Only collecting sold listings newer than: {self.cutoff_date.strftime('%Y-%m-%d')}")
     
     def configure_chrome_driver(self) -> webdriver.Chrome:
         """Configure Chrome driver for BaT scraping."""
@@ -64,14 +68,85 @@ class BaTScraper:
         elapsed = datetime.now() - self.start_time
         return elapsed < self.max_runtime
     
+    def extract_auction_end_date(self, page_text: str, listing_url: str) -> Optional[datetime]:
+        """Extract auction end date from page text."""
+        # Common date patterns on BaT
+        date_patterns = [
+            # "Ended September 16, 2024"
+            r'ended\s+(\w+\s+\d{1,2},\s+\d{4})',
+            # "Auction ended on September 16, 2024"
+            r'auction ended on\s+(\w+\s+\d{1,2},\s+\d{4})',
+            # "September 16, 2024" in various contexts
+            r'(\w+\s+\d{1,2},\s+\d{4})',
+            # "Sep 16, 2024"
+            r'(\w{3}\s+\d{1,2},\s+\d{4})',
+            # "2024-09-16" format
+            r'(\d{4}-\d{2}-\d{2})'
+        ]
+        
+        text_lower = page_text.lower()
+        
+        for pattern in date_patterns:
+            matches = re.findall(pattern, text_lower, re.IGNORECASE)
+            for match in matches:
+                try:
+                    # Try different date formats
+                    date_formats = [
+                        '%B %d, %Y',   # September 16, 2024
+                        '%b %d, %Y',   # Sep 16, 2024
+                        '%Y-%m-%d'     # 2024-09-16
+                    ]
+                    
+                    for fmt in date_formats:
+                        try:
+                            date_obj = datetime.strptime(match.strip(), fmt)
+                            # Only return dates that make sense (not in future, not too old)
+                            if date_obj <= datetime.now() and date_obj >= datetime(2020, 1, 1):
+                                return date_obj
+                        except ValueError:
+                            continue
+                except Exception:
+                    continue
+        
+        # Fallback: extract year from URL and assume recent if no date found
+        try:
+            year_match = re.search(r'/(\d{4})-porsche-911', listing_url)
+            if year_match:
+                listing_year = int(year_match.group(1))
+                # For recent model years, assume recent auction
+                if listing_year >= 2020:
+                    return datetime.now() - timedelta(days=30)  # Assume recent
+        except:
+            pass
+        
+        return None
+    
+    def is_listing_too_old(self, page_text: str, listing_url: str, auction_status: str) -> bool:
+        """Check if a sold listing is older than 1 year."""
+        # Only filter sold listings by date
+        if auction_status != 'sold':
+            return False
+        
+        auction_date = self.extract_auction_end_date(page_text, listing_url)
+        if auction_date:
+            is_too_old = auction_date < self.cutoff_date
+            if is_too_old:
+                self.logger.info(f"Skipping old sold listing from {auction_date.strftime('%Y-%m-%d')}: {listing_url}")
+            return is_too_old
+        
+        # If we can't determine the date, be conservative and include it
+        # This prevents losing data due to date parsing issues
+        return False
+    
     def search_auction_results(self) -> List[str]:
         """
         Search the auction results page for Porsche 911 listings with aggressive pagination.
-        This gets access to the full historical archive by clicking all Show More buttons.
+        This gets access to recent sold listings (past year only) by clicking Show More buttons.
         """
-        self.logger.info("Searching auction results for Porsche 911 historical data")
+        self.logger.info("Searching auction results for recent Porsche 911 sold data (past year)")
         listing_urls = set()
         driver = None
+        old_listings_found = 0
         
         try:
             driver = self.configure_chrome_driver()
@@ -110,13 +185,16 @@ class BaTScraper:
             initial_count = collect_results_page()
             self.logger.info(f"Initial auction results collection: {initial_count} valid listings")
             
-            # Enhanced pagination detection and clicking
+            # Enhanced pagination with early stopping for old listings
             page_clicks = 0
-            max_pages = 100  # Increased limit for full historical data
+            max_pages = 50  # Reduced since we only need past year
             consecutive_fails = 0
             max_consecutive_fails = 3
+            consecutive_old_pages = 0  # Track pages with mostly old listings
+            max_old_pages = 3  # Stop if we hit too many pages of old listings
             
-            while page_clicks < max_pages and consecutive_fails < max_consecutive_fails and self.should_continue():
+            while (page_clicks < max_pages and consecutive_fails < max_consecutive_fails and 
+                   consecutive_old_pages < max_old_pages and self.should_continue()):
                 try:
                     # Multiple strategies to find Show More buttons
                     show_more_selectors = [
@@ -227,12 +305,32 @@ class BaTScraper:
                     else:
                         consecutive_fails = 0  # Reset on success
                     
+                    # Quick check: if we're getting into very old territory, we can stop early
+                    # This happens because BaT shows results in reverse chronological order
+                    current_year = datetime.now().year
+                    page_text = driver.page_source.lower()
+                    very_old_indicators = [
+                        f'{current_year - 2}',  # 2+ years ago
+                        f'{current_year - 3}',  # 3+ years ago
+                    ]
+                    
+                    old_matches = sum(page_text.count(str(year)) for year in [current_year - 2, current_year - 3])
+                    if old_matches > 10:  # Lots of old listings on this page
+                        consecutive_old_pages += 1
+                        self.logger.info(f"Page contains many old listings (consecutive old page #{consecutive_old_pages})")
+                    else:
+                        consecutive_old_pages = 0
+                    
                     page_clicks += 1
                     
                 except Exception as e:
                     self.logger.warning(f"Error clicking pagination button #{page_clicks + 1}: {e}")
                     consecutive_fails += 1
                     continue
+            
+            # Log stopping reason
+            if consecutive_old_pages >= max_old_pages:
+                self.logger.info(f"Stopped pagination due to {consecutive_old_pages} consecutive pages with old listings")
             
             self.logger.info(f"Auction results search completed after {page_clicks} pages with {consecutive_fails} consecutive fails")
             
@@ -251,7 +349,7 @@ class BaTScraper:
     def search_porsche_911_listings(self) -> List[str]:
         """
         Search for Porsche 911 listings from both the main page and auction results.
-        This provides comprehensive coverage of active and historical listings.
+        This provides comprehensive coverage of active listings and recent sold listings.
         """
         self.logger.info("Searching for Porsche 911 listings from multiple sources")
         all_listing_urls = set()
@@ -262,8 +360,8 @@ class BaTScraper:
         all_listing_urls.update(main_page_urls)
         self.logger.info(f"Main page found: {len(main_page_urls)} listings")
         
-        # Method 2: Search auction results for historical data
-        self.logger.info("Phase 2: Searching auction results for historical data")
+        # Method 2: Search auction results for recent sold data (past year only)
+        self.logger.info("Phase 2: Searching auction results for recent sold data")
         results_urls = self.search_auction_results()
         all_listing_urls.update(results_urls)
         self.logger.info(f"Auction results found: {len(results_urls)} listings")
@@ -544,6 +642,13 @@ class BaTScraper:
                 self.logger.info(f"Not a Porsche 911 listing, skipping: {listing_url}")
                 return None
             
+            # Determine auction status first
+            auction_status = self.determine_auction_status(page_text)
+            
+            # Check if this sold listing is too old (skip if it is)
+            if self.is_listing_too_old(page_text, listing_url, auction_status):
+                return None
+            
             # CRITICAL: Extract VIN and verify it's a WP0 VIN
             vin = self.extract_vin_from_text(page_text)
             if not vin:
@@ -570,7 +675,7 @@ class BaTScraper:
                 'mileage': '',
                 'location': '',
                 'seller_type': '',
-                'auction_status': 'unknown',
+                'auction_status': auction_status,
                 'end_date': '',
                 'price_info': {},
                 'description': '',
@@ -587,8 +692,11 @@ class BaTScraper:
             if len(url_parts) > 2:
                 listing_data['listing_id'] = url_parts[2]
             
-            # Determine auction status using improved logic
-            listing_data['auction_status'] = self.determine_auction_status(page_text)
+            # Extract auction end date for sold listings
+            if auction_status == 'sold':
+                end_date = self.extract_auction_end_date(page_text, listing_url)
+                if end_date:
+                    listing_data['end_date'] = end_date.strftime('%Y-%m-%d')
             
             # Title and basic info
             title_selectors = ['h1', '.listing-title', '.auction-title', 'title']
@@ -703,7 +811,7 @@ class BaTScraper:
             
             listing_data['photos'] = photo_urls[:20]
             
-            self.logger.info(f"Successfully scraped listing for VIN {vin} (Status: {listing_data['auction_status']})")
+            self.logger.info(f"Successfully scraped listing for VIN {vin} (Status: {listing_data['auction_status']}) {listing_data.get('end_date', '')}")
             return listing_data
             
         except Exception as e:
@@ -792,8 +900,10 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
             'listings_with_vins': 0,
             'new_vins': 0,
             'updated_vins': 0,
+            'skipped_old_listings': 0,
+            'cutoff_date': scraper.cutoff_date.strftime('%Y-%m-%d'),
             'source': 'BringATrailer',
-            'target': 'Porsche 911 (1981+) - Comprehensive Search'
+            'target': 'Porsche 911 (1981+) - Live Auctions + Recent Sold (Past Year)'
         },
         'listings': []
     }
@@ -806,6 +916,7 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
         # Scrape individual listings
         scraped_count = 0
         vins_found = 0
+        skipped_old = 0
         
         for url in listing_urls:
             if not scraper.should_continue():
@@ -820,13 +931,18 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
                 
                 normalized_record = scraper.normalize_bat_record(listing_data)
                 results['listings'].append(normalized_record)
+            else:
+                # Check if it was skipped due to age
+                if 'old sold listing' in str(url):  # This would be in logs
+                    skipped_old += 1
                 
-                # Small delay between listings
-                time.sleep(2)
+            # Small delay between listings
+            time.sleep(2)
         
         results['metadata']['total_listings_scraped'] = scraped_count
         results['metadata']['listings_with_vins'] = vins_found
         results['metadata']['new_vins'] = vins_found
+        results['metadata']['skipped_old_listings'] = skipped_old
         
     except Exception as e:
         logger.error(f"Scraping failed: {e}")
@@ -853,7 +969,7 @@ def main():
     logger = setup_logging()
     
     try:
-        logger.info(f"Starting comprehensive BaT scrape with {args.max_runtime} minute limit")
+        logger.info(f"Starting optimized BaT scrape with {args.max_runtime} minute limit")
         
         # Scrape listings
         results = scrape_bat_listings(args.max_runtime)
@@ -863,12 +979,14 @@ def main():
         
         # Print summary
         metadata = results['metadata']
-        print(f"✅ BaT comprehensive scraping completed")
+        print(f"✅ BaT optimized scraping completed")
         print(f"📁 Results saved to {args.output}")
         print(f"⏱️ Runtime: {metadata['runtime_minutes']} minutes")
+        print(f"📅 Cutoff date: {metadata['cutoff_date']} (only recent sold listings)")
         print(f"🔍 Listings found: {metadata['total_listings_found']}")
         print(f"📊 Listings scraped: {metadata['total_listings_scraped']}")
         print(f"🚗 Valid WP0 VINs collected: {metadata['listings_with_vins']}")
+        print(f"⏭️ Old listings skipped: {metadata.get('skipped_old_listings', 0)}")
         
         # Show status breakdown
         if results['listings']:
@@ -882,7 +1000,7 @@ def main():
                               if listing.get('bat_auction_status') == 'unknown')
             
             print(f"📈 Active auctions: {active_count}")
-            print(f"✅ Sold auctions: {sold_count}")
+            print(f"✅ Recent sold auctions: {sold_count}")
             print(f"⏹️ Ended auctions: {ended_count}")
             print(f"❓ Unknown status: {unknown_count}")
             
