@@ -3,7 +3,7 @@
 Bring a Trailer scraper for Porsche 911 listings (1981+).
 - Scrapes from BOTH the main /porsche/911/ page AND the auction results search
 - Gets comprehensive historical data by using BaT's search functionality with improved pagination
-- Only collects sold listings from the past year to stay current (by auction end date)
+- Only collects sold listings from the past year to stay current
 - Only accepts cars with valid WP0* VINs (no parts/memorabilia)
 - Enforces YYYY-porsche-911-* URL pattern for 1981+ models
 """
@@ -42,9 +42,9 @@ class BaTScraper:
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36'
         })
         self.processed_vins = set()
-        # Set cutoff date to 1 year ago from today
+        # Set cutoff date to 1 year ago
         self.cutoff_date = datetime.now() - timedelta(days=365)
-        self.logger.info(f"Only collecting listings newer than: {self.cutoff_date.strftime('%Y-%m-%d')}")
+        self.logger.info(f"Only collecting sold listings newer than: {self.cutoff_date.strftime('%Y-%m-%d')}")
     
     def configure_chrome_driver(self) -> webdriver.Chrome:
         """Configure Chrome driver for BaT scraping."""
@@ -68,207 +68,85 @@ class BaTScraper:
         elapsed = datetime.now() - self.start_time
         return elapsed < self.max_runtime
     
-    def parse_relative_date(self, text: str) -> Optional[datetime]:
-        """Parse relative dates like 'ended 3 days ago' or 'sold 2 weeks ago'."""
-        now = datetime.now()
-        text_lower = text.lower().strip()
-        
-        # Pattern for "X days ago", "X weeks ago", etc.
-        relative_patterns = [
-            r'(\d+)\s*days?\s*ago',
-            r'(\d+)\s*weeks?\s*ago',
-            r'(\d+)\s*months?\s*ago',
-            r'yesterday',
-            r'today'
-        ]
-        
-        for pattern in relative_patterns:
-            match = re.search(pattern, text_lower)
-            if match:
-                if 'yesterday' in text_lower:
-                    return now - timedelta(days=1)
-                elif 'today' in text_lower:
-                    return now
-                elif 'days' in text_lower:
-                    days = int(match.group(1))
-                    return now - timedelta(days=days)
-                elif 'weeks' in text_lower:
-                    weeks = int(match.group(1))
-                    return now - timedelta(weeks=weeks)
-                elif 'months' in text_lower:
-                    months = int(match.group(1))
-                    return now - timedelta(days=months*30)  # Approximate
-        
-        return None
-    
-    def assess_page_recency_by_dates(self, driver) -> dict:
-        """Assess how recent the auction end dates are on the current page."""
-        try:
-            # Get all text elements that might contain dates
-            all_text_elements = driver.find_elements(By.XPATH, "//*[text()]")
-            
-            dates_found = []
-            current_year = datetime.now().year
-            now = datetime.now()
-            
-            # Comprehensive date patterns for BaT
-            date_patterns = [
-                # Absolute dates
-                (r'(\w+\s+\d{1,2},\s+\d{4})', ['%B %d, %Y', '%b %d, %Y']),  # "September 18, 2024"
-                (r'(\d{1,2}/\d{1,2}/\d{4})', ['%m/%d/%Y']),                   # "09/18/2024" 
-                (r'(\d{4}-\d{2}-\d{2})', ['%Y-%m-%d']),                       # "2024-09-18"
-                
-                # Relative dates
-                (r'ended\s+(\d+)\s*days?\s*ago', None),                       # "ended 5 days ago"
-                (r'sold\s+(\d+)\s*days?\s*ago', None),                        # "sold 3 days ago"
-                (r'(\d+)\s*days?\s*ago', None),                               # "2 days ago"
-                (r'(\d+)\s*weeks?\s*ago', None),                              # "3 weeks ago"
-                (r'(\d+)\s*months?\s*ago', None),                             # "2 months ago"
-                (r'yesterday|today', None),                                    # "yesterday", "today"
-            ]
-            
-            for element in all_text_elements[:50]:  # Limit to avoid too much processing
-                try:
-                    element_text = element.text.strip()
-                    if not element_text or len(element_text) > 200:  # Skip very long text
-                        continue
-                    
-                    # Try absolute date patterns
-                    for pattern, formats in date_patterns:
-                        if formats is None:  # Relative date pattern
-                            relative_date = self.parse_relative_date(element_text)
-                            if relative_date:
-                                dates_found.append(relative_date)
-                                self.logger.debug(f"Found relative date: '{element_text}' -> {relative_date.strftime('%Y-%m-%d')}")
-                        else:  # Absolute date pattern
-                            matches = re.findall(pattern, element_text, re.IGNORECASE)
-                            for match in matches:
-                                for fmt in formats:
-                                    try:
-                                        date_obj = datetime.strptime(match.strip(), fmt)
-                                        # Only accept reasonable dates (within last 5 years, not in future)
-                                        if datetime(2020, 1, 1) <= date_obj <= now:
-                                            dates_found.append(date_obj)
-                                            self.logger.debug(f"Found absolute date: '{match}' -> {date_obj.strftime('%Y-%m-%d')}")
-                                            break
-                                    except ValueError:
-                                        continue
-                                        
-                except Exception as e:
-                    self.logger.debug(f"Error processing element: {e}")
-                    continue
-            
-            # Remove duplicates and sort
-            unique_dates = list(set(dates_found))
-            unique_dates.sort(reverse=True)  # Most recent first
-            
-            if not unique_dates:
-                self.logger.info("No auction dates found on page - assuming mixed content")
-                return {'is_mostly_old': False, 'recent_count': 1, 'old_count': 0, 'avg_days_ago': 100}
-            
-            # Calculate how old these auctions are
-            days_ago_list = [(now - date).days for date in unique_dates]
-            avg_days_ago = sum(days_ago_list) / len(days_ago_list)
-            
-            # Count recent vs old based on our 1-year cutoff (365 days)
-            recent_count = sum(1 for days in days_ago_list if days <= 365)
-            old_count = sum(1 for days in days_ago_list if days > 365)
-            
-            # Consider page mostly old if more than 70% of auctions are older than 1 year
-            is_mostly_old = (old_count / len(days_ago_list)) > 0.7 if len(days_ago_list) > 0 else False
-            
-            self.logger.info(f"Page date analysis: {recent_count} recent auctions, {old_count} old auctions, avg {avg_days_ago:.0f} days ago ({len(unique_dates)} dates found) - {'MOSTLY OLD' if is_mostly_old else 'RECENT/MIXED'}")
-            
-            return {
-                'is_mostly_old': is_mostly_old,
-                'recent_count': recent_count,
-                'old_count': old_count,
-                'total_dates': len(unique_dates),
-                'avg_days_ago': avg_days_ago,
-                'oldest_days': max(days_ago_list) if days_ago_list else 0,
-                'newest_days': min(days_ago_list) if days_ago_list else 0,
-                'dates_sample': [d.strftime('%Y-%m-%d') for d in unique_dates[:5]]  # First 5 for logging
-            }
-            
-        except Exception as e:
-            self.logger.warning(f"Error analyzing page dates: {e}")
-            return {'is_mostly_old': False, 'recent_count': 1, 'old_count': 0, 'avg_days_ago': 100}
-    
     def extract_auction_end_date(self, page_text: str, listing_url: str) -> Optional[datetime]:
-        """Extract auction end date from individual listing page text."""
-        # Common date patterns on BaT individual listing pages
+        """Extract auction end date from page text."""
+        # Common date patterns on BaT
         date_patterns = [
-            # Past tense - for sold/ended auctions
-            (r'ended\s+(\w+\s+\d{1,2},\s+\d{4})', '%B %d, %Y'),              # "ended September 16, 2024"
-            (r'auction ended on\s+(\w+\s+\d{1,2},\s+\d{4})', '%B %d, %Y'),   # "auction ended on September 16, 2024"
-            (r'sold\s+(\w+\s+\d{1,2},\s+\d{4})', '%B %d, %Y'),               # "sold September 16, 2024"
-            
-            # Future tense - for active auctions
-            (r'ends on\s+(\w+,\s+\w+\s+\d{1,2})', '%A, %B %d'),              # "ends on Thursday, July 17" (current year assumed)
-            (r'ends\s+(\w+\s+\d{1,2},\s+\d{4})', '%B %d, %Y'),               # "ends September 16, 2024"
-            (r'(\w+\s+\d{1,2},\s+\d{4})\s+at\s+\d', '%B %d, %Y'),            # "July 17, 2025 at 2:47PM"
-            
-            # Short formats
-            (r'(\w{3}\s+\d{1,2},\s+\d{4})', '%b %d, %Y'),                    # "Sep 16, 2024"
-            (r'(\d{4}-\d{2}-\d{2})', '%Y-%m-%d'),                            # "2024-09-16"
-            
-            # Relative dates
-            (r'ended\s+(\d+)\s*days?\s*ago', None),                           # "ended 5 days ago"
-            (r'sold\s+(\d+)\s*days?\s*ago', None),                            # "sold 3 days ago"
+            # "Ended September 16, 2024"
+            r'ended\s+(\w+\s+\d{1,2},\s+\d{4})',
+            # "Auction ended on September 16, 2024"
+            r'auction ended on\s+(\w+\s+\d{1,2},\s+\d{4})',
+            # "September 16, 2024" in various contexts
+            r'(\w+\s+\d{1,2},\s+\d{4})',
+            # "Sep 16, 2024"
+            r'(\w{3}\s+\d{1,2},\s+\d{4})',
+            # "2024-09-16" format
+            r'(\d{4}-\d{2}-\d{2})'
         ]
         
         text_lower = page_text.lower()
         
-        for pattern, date_format in date_patterns:
+        for pattern in date_patterns:
             matches = re.findall(pattern, text_lower, re.IGNORECASE)
             for match in matches:
                 try:
-                    if date_format is None:  # Relative date
-                        relative_date = self.parse_relative_date(f"ended {match} days ago")
-                        if relative_date:
-                            return relative_date
-                    else:  # Absolute date
-                        if date_format == '%A, %B %d':  # Add current year for partial dates
-                            match = f"{match} {datetime.now().year}"
-                            date_format = '%A, %B %d %Y'
-                        
-                        date_obj = datetime.strptime(match.strip(), date_format)
-                        # Only return dates that make sense (not too far in future, not too old)
-                        if datetime(2020, 1, 1) <= date_obj <= datetime.now() + timedelta(days=365):
-                            return date_obj
-                except ValueError as e:
-                    self.logger.debug(f"Date parse error for '{match}' with format '{date_format}': {e}")
+                    # Try different date formats
+                    date_formats = [
+                        '%B %d, %Y',   # September 16, 2024
+                        '%b %d, %Y',   # Sep 16, 2024
+                        '%Y-%m-%d'     # 2024-09-16
+                    ]
+                    
+                    for fmt in date_formats:
+                        try:
+                            date_obj = datetime.strptime(match.strip(), fmt)
+                            # Only return dates that make sense (not in future, not too old)
+                            if date_obj <= datetime.now() and date_obj >= datetime(2020, 1, 1):
+                                return date_obj
+                        except ValueError:
+                            continue
+                except Exception:
                     continue
-                except Exception as e:
-                    self.logger.debug(f"Unexpected error parsing date '{match}': {e}")
-                    continue
+        
+        # Fallback: extract year from URL and assume recent if no date found
+        try:
+            year_match = re.search(r'/(\d{4})-porsche-911', listing_url)
+            if year_match:
+                listing_year = int(year_match.group(1))
+                # For recent model years, assume recent auction
+                if listing_year >= 2020:
+                    return datetime.now() - timedelta(days=30)  # Assume recent
+        except:
+            pass
         
         return None
     
     def is_listing_too_old(self, page_text: str, listing_url: str, auction_status: str) -> bool:
-        """Check if any listing (active, sold, or ended) is older than 1 year."""
+        """Check if a sold listing is older than 1 year."""
+        # Only filter sold listings by date
+        if auction_status != 'sold':
+            return False
+        
         auction_date = self.extract_auction_end_date(page_text, listing_url)
         if auction_date:
             is_too_old = auction_date < self.cutoff_date
             if is_too_old:
-                self.logger.info(f"Skipping old listing ({auction_status}) from {auction_date.strftime('%Y-%m-%d')}: {listing_url}")
+                self.logger.info(f"Skipping old sold listing from {auction_date.strftime('%Y-%m-%d')}: {listing_url}")
             return is_too_old
         
-        # For active listings without clear end dates, include them (they're current)
-        if auction_status == 'active':
-            return False
-            
-        # If we can't determine the date for sold/ended listings, be conservative and include it
+        # If we can't determine the date, be conservative and include it
+        # This prevents losing data due to date parsing issues
         return False
     
     def search_auction_results(self) -> List[str]:
         """
-        Search the auction results page for Porsche 911 listings with date-based early stopping.
-        Stops when it detects we're getting into pages with auctions older than 1 year.
+        Search the auction results page for Porsche 911 listings with aggressive pagination.
+        This gets access to recent sold listings (past year only) by clicking Show More buttons.
         """
-        self.logger.info("Searching auction results for recent Porsche 911 data (past year by auction date)")
+        self.logger.info("Searching auction results for recent Porsche 911 sold data (past year)")
         listing_urls = set()
         driver = None
+        old_listings_found = 0
         
         try:
             driver = self.configure_chrome_driver()
@@ -287,7 +165,7 @@ class BaTScraper:
             def collect_results_page():
                 """Collect all listing URLs from current results page."""
                 current_links = driver.find_elements(By.CSS_SELECTOR, 'a[href*="/listing/"]')
-                new_urls_this_page = []
+                new_urls_added = 0
                 
                 for link in current_links:
                     try:
@@ -295,44 +173,49 @@ class BaTScraper:
                         if href and self.is_valid_listing_url(href):
                             if href not in listing_urls:
                                 listing_urls.add(href)
-                                new_urls_this_page.append(href)
+                                new_urls_added += 1
                                 self.logger.info(f"DEBUG: Added auction result: {href}")
                     except Exception as e:
                         self.logger.debug(f"Error processing results link: {e}")
                         continue
                 
-                return new_urls_this_page
+                return new_urls_added
             
             # Collect initial results
-            initial_urls = collect_results_page()
-            self.logger.info(f"Initial auction results collection: {len(initial_urls)} valid listings")
+            initial_count = collect_results_page()
+            self.logger.info(f"Initial auction results collection: {initial_count} valid listings")
             
-            # Enhanced pagination with date-based early stopping
+            # Enhanced pagination with early stopping for old listings
             page_clicks = 0
-            max_pages = 100  
+            max_pages = 50  # Reduced since we only need past year
             consecutive_fails = 0
             max_consecutive_fails = 3
-            consecutive_old_pages = 0  
-            max_consecutive_old_pages = 3  # Stop after 3 consecutive pages of mostly old auctions
+            consecutive_old_pages = 0  # Track pages with mostly old listings
+            max_old_pages = 3  # Stop if we hit too many pages of old listings
             
             while (page_clicks < max_pages and consecutive_fails < max_consecutive_fails and 
-                   consecutive_old_pages < max_consecutive_old_pages and self.should_continue()):
+                   consecutive_old_pages < max_old_pages and self.should_continue()):
                 try:
                     # Multiple strategies to find Show More buttons
                     show_more_selectors = [
+                        # Text-based searches
                         "//*[contains(text(), 'Show More')]",
                         "//*[contains(text(), 'Load More')]",
                         "//*[contains(text(), 'See More')]",
                         "//*[contains(text(), 'View More')]",
+                        # Case insensitive
                         "//*[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'show more')]",
                         "//*[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'load more')]",
+                        # Button-specific selectors
                         "//button[contains(text(), 'Show More')]",
                         "//button[contains(text(), 'Load More')]",
                         "//a[contains(text(), 'Show More')]",
                         "//a[contains(text(), 'Load More')]",
+                        # Class-based searches (common patterns)
                         "//*[contains(@class, 'show-more')]",
                         "//*[contains(@class, 'load-more')]",
                         "//*[contains(@class, 'more-results')]",
+                        # ID-based searches
                         "//*[contains(@id, 'show-more')]",
                         "//*[contains(@id, 'load-more')]"
                     ]
@@ -409,8 +292,8 @@ class BaTScraper:
                     # Wait longer for content to load (auction results can be slow)
                     time.sleep(6)
                     
-                    # Collect new results from this page
-                    new_urls_this_page = collect_results_page()
+                    # Collect new results
+                    new_results = collect_results_page()
                     post_click_count = len(listing_urls)
                     actual_new = post_click_count - pre_click_count
                     
@@ -419,32 +302,26 @@ class BaTScraper:
                     if actual_new == 0:
                         consecutive_fails += 1
                         self.logger.info(f"No new results found (consecutive fail #{consecutive_fails})")
-                        continue
                     else:
                         consecutive_fails = 0  # Reset on success
                     
-                    # SMART EARLY STOPPING: Check if this page has mostly old auction dates
-                    if page_clicks >= 5:  # Only start checking after page 5
-                        page_assessment = self.assess_page_recency_by_dates(driver)
-                        
-                        if page_assessment['is_mostly_old']:
-                            consecutive_old_pages += 1
-                            self.logger.info(f"Page {page_clicks + 1} contains mostly old auctions (avg {page_assessment['avg_days_ago']:.0f} days ago) - consecutive old page #{consecutive_old_pages}")
-                            
-                            # If we're consistently hitting very old pages (>2 years), be more aggressive
-                            if page_assessment['avg_days_ago'] > 730:  # More than 2 years old
-                                consecutive_old_pages += 1  # Count double for very old pages
-                                self.logger.info("Page contains very old auctions (>2 years), counting as double-old")
-                        else:
-                            consecutive_old_pages = 0  # Reset on fresh page
-                            self.logger.info(f"Page {page_clicks + 1} contains recent auctions (avg {page_assessment['avg_days_ago']:.0f} days ago)")
+                    # Quick check: if we're getting into very old territory, we can stop early
+                    # This happens because BaT shows results in reverse chronological order
+                    current_year = datetime.now().year
+                    page_text = driver.page_source.lower()
+                    very_old_indicators = [
+                        f'{current_year - 2}',  # 2+ years ago
+                        f'{current_year - 3}',  # 3+ years ago
+                    ]
+                    
+                    old_matches = sum(page_text.count(str(year)) for year in [current_year - 2, current_year - 3])
+                    if old_matches > 10:  # Lots of old listings on this page
+                        consecutive_old_pages += 1
+                        self.logger.info(f"Page contains many old listings (consecutive old page #{consecutive_old_pages})")
+                    else:
+                        consecutive_old_pages = 0
                     
                     page_clicks += 1
-                    
-                    # Extra safety: if we have lots of listings and recent pages are all old, stop
-                    if post_click_count >= 500 and consecutive_old_pages >= 2:
-                        self.logger.info(f"Collected {post_click_count} listings and hit {consecutive_old_pages} consecutive old pages - stopping")
-                        break
                     
                 except Exception as e:
                     self.logger.warning(f"Error clicking pagination button #{page_clicks + 1}: {e}")
@@ -452,14 +329,10 @@ class BaTScraper:
                     continue
             
             # Log stopping reason
-            if consecutive_old_pages >= max_consecutive_old_pages:
-                self.logger.info(f"Stopped pagination due to {consecutive_old_pages} consecutive pages with mostly old auctions")
-            elif consecutive_fails >= max_consecutive_fails:
-                self.logger.info(f"Stopped pagination due to {consecutive_fails} consecutive click failures")
-            elif page_clicks >= max_pages:
-                self.logger.info(f"Stopped pagination due to reaching max pages limit ({max_pages})")
-                
-            self.logger.info(f"Auction results search completed after {page_clicks} pages")
+            if consecutive_old_pages >= max_old_pages:
+                self.logger.info(f"Stopped pagination due to {consecutive_old_pages} consecutive pages with old listings")
+            
+            self.logger.info(f"Auction results search completed after {page_clicks} pages with {consecutive_fails} consecutive fails")
             
         except Exception as e:
             self.logger.error(f"Error searching auction results: {e}")
@@ -487,8 +360,8 @@ class BaTScraper:
         all_listing_urls.update(main_page_urls)
         self.logger.info(f"Main page found: {len(main_page_urls)} listings")
         
-        # Method 2: Search auction results for comprehensive data
-        self.logger.info("Phase 2: Searching auction results for recent data")
+        # Method 2: Search auction results for recent sold data (past year only)
+        self.logger.info("Phase 2: Searching auction results for recent sold data")
         results_urls = self.search_auction_results()
         all_listing_urls.update(results_urls)
         self.logger.info(f"Auction results found: {len(results_urls)} listings")
@@ -648,7 +521,6 @@ class BaTScraper:
         
         # Current bid patterns
         bid_patterns = [
-            r'usd\s*\$[\d,]+',              # "USD $149,582"
             r'bid:\s*usd\s*\$[\d,]+',
             r'current bid[:\s]*\$[\d,]+',
             r'\$[\d,]+\s*current bid',
@@ -692,26 +564,7 @@ class BaTScraper:
         """Determine if this is an active auction, sold auction, or ended without sale."""
         text_lower = page_text.lower()
         
-        # Check for active indicators first (most relevant for current listings)
-        active_indicators = [
-            'ends in',                      # "Ends in" 
-            'time left:',
-            'days left',
-            'hours left', 
-            'minutes left',
-            'bidding ends',
-            'current bid:',
-            'bid: usd $',
-            'checking for last second bids',
-            'place bid',
-            'register to bid'
-        ]
-        
-        for indicator in active_indicators:
-            if indicator in text_lower:
-                return 'active'
-        
-        # Check for sold indicators
+        # Check for sold indicators first (most definitive)
         sold_indicators = [
             'sold for $',
             'winning bid:',
@@ -725,6 +578,23 @@ class BaTScraper:
         for indicator in sold_indicators:
             if indicator in text_lower:
                 return 'sold'
+        
+        # Check for active auction indicators
+        active_indicators = [
+            'current bid:',
+            'bid: usd $',
+            'time left:',
+            'days left',
+            'hours left',
+            'minutes left',
+            'bidding ends',
+            'reserve not met',
+            'reserve met'
+        ]
+        
+        for indicator in active_indicators:
+            if indicator in text_lower:
+                return 'active'
         
         # Check for ended without sale
         ended_indicators = [
@@ -775,7 +645,7 @@ class BaTScraper:
             # Determine auction status first
             auction_status = self.determine_auction_status(page_text)
             
-            # Check if this listing is too old (skip if it is)
+            # Check if this sold listing is too old (skip if it is)
             if self.is_listing_too_old(page_text, listing_url, auction_status):
                 return None
             
@@ -822,10 +692,11 @@ class BaTScraper:
             if len(url_parts) > 2:
                 listing_data['listing_id'] = url_parts[2]
             
-            # Extract auction end date
-            end_date = self.extract_auction_end_date(page_text, listing_url)
-            if end_date:
-                listing_data['end_date'] = end_date.strftime('%Y-%m-%d')
+            # Extract auction end date for sold listings
+            if auction_status == 'sold':
+                end_date = self.extract_auction_end_date(page_text, listing_url)
+                if end_date:
+                    listing_data['end_date'] = end_date.strftime('%Y-%m-%d')
             
             # Title and basic info
             title_selectors = ['h1', '.listing-title', '.auction-title', 'title']
@@ -1032,7 +903,7 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
             'skipped_old_listings': 0,
             'cutoff_date': scraper.cutoff_date.strftime('%Y-%m-%d'),
             'source': 'BringATrailer',
-            'target': 'Porsche 911 (1981+) - Enhanced Date Detection'
+            'target': 'Porsche 911 (1981+) - Live Auctions + Recent Sold (Past Year)'
         },
         'listings': []
     }
@@ -1061,7 +932,9 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
                 normalized_record = scraper.normalize_bat_record(listing_data)
                 results['listings'].append(normalized_record)
             else:
-                skipped_old += 1
+                # Check if it was skipped due to age
+                if 'old sold listing' in str(url):  # This would be in logs
+                    skipped_old += 1
                 
             # Small delay between listings
             time.sleep(2)
@@ -1096,7 +969,7 @@ def main():
     logger = setup_logging()
     
     try:
-        logger.info(f"Starting enhanced date-aware BaT scrape with {args.max_runtime} minute limit")
+        logger.info(f"Starting optimized BaT scrape with {args.max_runtime} minute limit")
         
         # Scrape listings
         results = scrape_bat_listings(args.max_runtime)
@@ -1106,10 +979,10 @@ def main():
         
         # Print summary
         metadata = results['metadata']
-        print(f"✅ BaT enhanced date-aware scraping completed")
+        print(f"✅ BaT optimized scraping completed")
         print(f"📁 Results saved to {args.output}")
         print(f"⏱️ Runtime: {metadata['runtime_minutes']} minutes")
-        print(f"📅 Cutoff date: {metadata['cutoff_date']} (auction end date)")
+        print(f"📅 Cutoff date: {metadata['cutoff_date']} (only recent sold listings)")
         print(f"🔍 Listings found: {metadata['total_listings_found']}")
         print(f"📊 Listings scraped: {metadata['total_listings_scraped']}")
         print(f"🚗 Valid WP0 VINs collected: {metadata['listings_with_vins']}")
