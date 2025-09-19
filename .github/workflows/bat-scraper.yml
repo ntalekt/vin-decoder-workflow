@@ -8,11 +8,11 @@ on:
       max_runtime:
         description: 'Maximum runtime in minutes'
         required: false
-        default: '45'
+        default: '120'
         type: string
 
 env:
-  MAX_RUNTIME_MINUTES: ${{ github.event.inputs.max_runtime || '45' }}
+  MAX_RUNTIME_MINUTES: ${{ github.event.inputs.max_runtime || '120' }}
 
 jobs:
   scrape-bat:
