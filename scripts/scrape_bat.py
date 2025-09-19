@@ -719,52 +719,84 @@ class BaTScraper:
         """Determine if this is an active auction, sold auction, or ended without sale."""
         text_lower = page_text.lower()
 
-        # Check for active indicators first (most relevant for current listings)
-        active_indicators = [
-            'ends in',  # "Ends in"
-            'time left:',
-            'days left',
-            'hours left',
-            'minutes left',
-            'bidding ends',
-            'current bid:',
-            'bid: usd $',
-            'checking for last second bids',
-            'place bid',
-            'register to bid'
-        ]
-
-        for indicator in active_indicators:
-            if indicator in text_lower:
-                return 'active'
-
-        # Check for sold indicators
+        # Check for SOLD indicators FIRST (highest priority)
         sold_indicators = [
+            'sold for usd $',  # "Sold for USD $56,000 on 9/25/24"
             'sold for $',
+            'bid to usd $',    # "Bid to USD $211,500 on 9/1/25" (indicates completed auction)
             'winning bid:',
             'final bid:',
             'hammer price:',
             'sale completed',
-            'auction ended',
-            'congratulations to'
+            'congratulations to',
+            'auction ended',   # This should come before active checks
+            'sold on ',        # "sold on 10/30/2024"
+            'ended on ',       # "ended on 10/30/2024"
         ]
 
         for indicator in sold_indicators:
             if indicator in text_lower:
                 return 'sold'
 
-        # Check for ended without sale
+        # Check for ended without sale indicators SECOND
         ended_indicators = [
             'reserve not met',
             'auction ended without sale',
             'no sale',
-            'did not meet reserve'
+            'did not meet reserve',
+            'reserve was not met',
+            'unsuccessful auction'
         ]
 
         for indicator in ended_indicators:
             if indicator in text_lower:
                 return 'ended'
 
+        # Check for ACTIVE indicators LAST (only if not sold/ended)
+        active_indicators = [
+            'current bid: usd $',  # "Current Bid: USD $48,755" (active auction)
+            'ends in',             # "Ends in"
+            'time left:',
+            'days left',
+            'hours left',
+            'minutes left',
+            'bidding ends',
+            'checking for last second bids',
+            'place bid',
+            'register to bid',
+            'bid now',
+            'reserve not yet met'  # This indicates active auction
+        ]
+
+        for indicator in active_indicators:
+            if indicator in text_lower:
+                return 'active'
+
+        # If we can't determine from indicators, check patterns with dates
+        import re
+        
+        # Look for patterns that indicate sold vs active
+        sold_date_patterns = [
+            r'sold for usd \$[\d,]+ on \d{1,2}/\d{1,2}/\d{2,4}',     # "Sold for USD $56,000 on 9/25/24"
+            r'bid to usd \$[\d,]+ on \d{1,2}/\d{1,2}/\d{2,4}',      # "Bid to USD $211,500 on 9/1/25"
+            r'ended \d{1,2}/\d{1,2}/\d{2,4}',
+            r'sold on \d{1,2}/\d{1,2}/\d{2,4}',
+        ]
+        
+        active_patterns = [
+            r'current bid:\s*usd \$[\d,]+',  # "Current Bid: USD $48,755"
+        ]
+        
+        # Check sold patterns first
+        for pattern in sold_date_patterns:
+            if re.search(pattern, text_lower):
+                return 'sold'
+                
+        # Then check active patterns
+        for pattern in active_patterns:
+            if re.search(pattern, text_lower):
+                return 'active'
+        
         # Default to unknown if we can't determine
         return 'unknown'
 
