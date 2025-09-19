@@ -68,6 +68,50 @@ class BaTScraper:
         elapsed = datetime.now() - self.start_time
         return elapsed < self.max_runtime
     
+    def extract_year_from_listing_urls(self, listing_urls: List[str]) -> List[int]:
+        """Extract years from a list of listing URLs to assess age."""
+        years = []
+        for url in listing_urls:
+            try:
+                # Extract year from URL pattern YYYY-porsche-911-
+                year_match = re.search(r'/(\d{4})-porsche-911-', url)
+                if year_match:
+                    year = int(year_match.group(1))
+                    years.append(year)
+            except:
+                continue
+        return years
+    
+    def assess_page_freshness(self, new_urls: List[str]) -> dict:
+        """Assess how fresh the listings on this page are."""
+        if not new_urls:
+            return {'is_mostly_old': True, 'recent_count': 0, 'old_count': 0}
+        
+        years = self.extract_year_from_listing_urls(new_urls)
+        current_year = datetime.now().year
+        
+        # Consider listings as "recent" if they're 2022 or newer
+        # This is a rough proxy since auction dates aren't in URLs
+        recent_threshold = current_year - 2  # 2023+ are "recent"
+        very_old_threshold = current_year - 10  # 2015 and older are "very old"
+        
+        recent_count = sum(1 for year in years if year >= recent_threshold)
+        old_count = sum(1 for year in years if year <= very_old_threshold)
+        total_count = len(years)
+        
+        # If more than 70% of listings are from very old car years, consider the page mostly old
+        is_mostly_old = (old_count / total_count) > 0.7 if total_count > 0 else True
+        
+        self.logger.info(f"Page freshness: {recent_count} recent cars, {old_count} very old cars, {total_count} total - {'MOSTLY OLD' if is_mostly_old else 'MIXED/RECENT'}")
+        
+        return {
+            'is_mostly_old': is_mostly_old,
+            'recent_count': recent_count,
+            'old_count': old_count,
+            'total_count': total_count,
+            'old_percentage': (old_count / total_count) if total_count > 0 else 1.0
+        }
+    
     def extract_auction_end_date(self, page_text: str, listing_url: str) -> Optional[datetime]:
         """Extract auction end date from page text."""
         # Common date patterns on BaT
@@ -140,10 +184,10 @@ class BaTScraper:
     
     def search_auction_results(self) -> List[str]:
         """
-        Search the auction results page for Porsche 911 listings with aggressive pagination.
-        This gets access to ALL auction results and filters by date at the individual listing level.
+        Search the auction results page for Porsche 911 listings with smart early stopping.
+        Stops when it detects we're getting into predominantly old auction territory.
         """
-        self.logger.info("Searching auction results for Porsche 911 data with full pagination")
+        self.logger.info("Searching auction results for Porsche 911 data with smart pagination")
         listing_urls = set()
         driver = None
         
@@ -164,7 +208,7 @@ class BaTScraper:
             def collect_results_page():
                 """Collect all listing URLs from current results page."""
                 current_links = driver.find_elements(By.CSS_SELECTOR, 'a[href*="/listing/"]')
-                new_urls_added = 0
+                new_urls_this_page = []
                 
                 for link in current_links:
                     try:
@@ -172,47 +216,44 @@ class BaTScraper:
                         if href and self.is_valid_listing_url(href):
                             if href not in listing_urls:
                                 listing_urls.add(href)
-                                new_urls_added += 1
+                                new_urls_this_page.append(href)
                                 self.logger.info(f"DEBUG: Added auction result: {href}")
                     except Exception as e:
                         self.logger.debug(f"Error processing results link: {e}")
                         continue
                 
-                return new_urls_added
+                return new_urls_this_page
             
             # Collect initial results
-            initial_count = collect_results_page()
-            self.logger.info(f"Initial auction results collection: {initial_count} valid listings")
+            initial_urls = collect_results_page()
+            self.logger.info(f"Initial auction results collection: {len(initial_urls)} valid listings")
             
-            # Enhanced pagination with more aggressive collection
+            # Enhanced pagination with smart early stopping
             page_clicks = 0
-            max_pages = 100  # Increased back to 100 for comprehensive collection
+            max_pages = 100  
             consecutive_fails = 0
-            max_consecutive_fails = 5  # Increased tolerance for failures
+            max_consecutive_fails = 3
+            consecutive_old_pages = 0  
+            max_consecutive_old_pages = 2  # Stop after 2 consecutive pages of mostly old listings
             
             while (page_clicks < max_pages and consecutive_fails < max_consecutive_fails and 
-                   self.should_continue()):
+                   consecutive_old_pages < max_consecutive_old_pages and self.should_continue()):
                 try:
                     # Multiple strategies to find Show More buttons
                     show_more_selectors = [
-                        # Text-based searches
                         "//*[contains(text(), 'Show More')]",
                         "//*[contains(text(), 'Load More')]",
                         "//*[contains(text(), 'See More')]",
                         "//*[contains(text(), 'View More')]",
-                        # Case insensitive
                         "//*[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'show more')]",
                         "//*[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'load more')]",
-                        # Button-specific selectors
                         "//button[contains(text(), 'Show More')]",
                         "//button[contains(text(), 'Load More')]",
                         "//a[contains(text(), 'Show More')]",
                         "//a[contains(text(), 'Load More')]",
-                        # Class-based searches (common patterns)
                         "//*[contains(@class, 'show-more')]",
                         "//*[contains(@class, 'load-more')]",
                         "//*[contains(@class, 'more-results')]",
-                        # ID-based searches
                         "//*[contains(@id, 'show-more')]",
                         "//*[contains(@id, 'load-more')]"
                     ]
@@ -289,8 +330,8 @@ class BaTScraper:
                     # Wait longer for content to load (auction results can be slow)
                     time.sleep(6)
                     
-                    # Collect new results
-                    new_results = collect_results_page()
+                    # Collect new results from this page
+                    new_urls_this_page = collect_results_page()
                     post_click_count = len(listing_urls)
                     actual_new = post_click_count - pre_click_count
                     
@@ -299,15 +340,24 @@ class BaTScraper:
                     if actual_new == 0:
                         consecutive_fails += 1
                         self.logger.info(f"No new results found (consecutive fail #{consecutive_fails})")
+                        continue
                     else:
                         consecutive_fails = 0  # Reset on success
                     
+                    # SMART EARLY STOPPING: Assess page freshness
+                    page_assessment = self.assess_page_freshness(new_urls_this_page)
+                    
+                    if page_assessment['is_mostly_old'] and page_clicks >= 10:  # Only apply after page 10
+                        consecutive_old_pages += 1
+                        self.logger.info(f"Page {page_clicks + 1} contains mostly old listings ({page_assessment['old_percentage']:.1%} old) - consecutive old page #{consecutive_old_pages}")
+                    else:
+                        consecutive_old_pages = 0  # Reset on fresh page
+                    
                     page_clicks += 1
                     
-                    # Only stop if we have a substantial number of listings AND haven't found new ones
-                    # This ensures we get a comprehensive dataset
-                    if post_click_count >= 500 and consecutive_fails >= 3:
-                        self.logger.info(f"Collected {post_click_count} listings, stopping pagination")
+                    # Extra safety: if we have a lot of listings and recent pages are all old, stop
+                    if post_click_count >= 1000 and consecutive_old_pages >= 2:
+                        self.logger.info(f"Collected {post_click_count} listings and hit {consecutive_old_pages} consecutive old pages - stopping")
                         break
                     
                 except Exception as e:
@@ -315,7 +365,15 @@ class BaTScraper:
                     consecutive_fails += 1
                     continue
             
-            self.logger.info(f"Auction results search completed after {page_clicks} pages with {consecutive_fails} consecutive fails")
+            # Log stopping reason
+            if consecutive_old_pages >= max_consecutive_old_pages:
+                self.logger.info(f"Stopped pagination due to {consecutive_old_pages} consecutive pages with mostly old listings")
+            elif consecutive_fails >= max_consecutive_fails:
+                self.logger.info(f"Stopped pagination due to {consecutive_fails} consecutive click failures")
+            elif page_clicks >= max_pages:
+                self.logger.info(f"Stopped pagination due to reaching max pages limit ({max_pages})")
+                
+            self.logger.info(f"Auction results search completed after {page_clicks} pages")
             
         except Exception as e:
             self.logger.error(f"Error searching auction results: {e}")
@@ -886,7 +944,7 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
             'skipped_old_listings': 0,
             'cutoff_date': scraper.cutoff_date.strftime('%Y-%m-%d'),
             'source': 'BringATrailer',
-            'target': 'Porsche 911 (1981+) - Live Auctions + Recent Sold (Date Filtered)'
+            'target': 'Porsche 911 (1981+) - Smart Pagination with Early Stopping'
         },
         'listings': []
     }
@@ -951,7 +1009,7 @@ def main():
     logger = setup_logging()
     
     try:
-        logger.info(f"Starting comprehensive BaT scrape with {args.max_runtime} minute limit")
+        logger.info(f"Starting smart BaT scrape with {args.max_runtime} minute limit")
         
         # Scrape listings
         results = scrape_bat_listings(args.max_runtime)
@@ -961,7 +1019,7 @@ def main():
         
         # Print summary
         metadata = results['metadata']
-        print(f"✅ BaT comprehensive scraping completed")
+        print(f"✅ BaT smart scraping completed")
         print(f"📁 Results saved to {args.output}")
         print(f"⏱️ Runtime: {metadata['runtime_minutes']} minutes")
         print(f"📅 Cutoff date: {metadata['cutoff_date']} (sold listings only)")
