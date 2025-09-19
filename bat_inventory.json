@@ -1,15 +1,15 @@
 {
   "metadata": {
     "created_at": "2025-09-18T02:39:59.561092",
-    "last_updated": "2025-09-18T17:41:29.278291",
-    "total_updates": 3,
-    "total_vins": 169,
-    "total_scrapes": 3,
+    "last_updated": "2025-09-19T04:35:22.231734",
+    "total_updates": 4,
+    "total_vins": 175,
+    "total_scrapes": 4,
     "version": "1.0",
     "source": "BringATrailer",
-    "last_scrape_new": 2,
-    "last_scrape_updated": 167,
-    "last_scrape_timestamp": "2025-09-18T17:41:29.278295"
+    "last_scrape_new": 6,
+    "last_scrape_updated": 160,
+    "last_scrape_timestamp": "2025-09-19T04:35:22.231737"
   },
   "inventory": [
     {
@@ -44,12 +44,11 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:33:29.807296",
-      "last_updated": "2025-09-18T17:41:29.272034",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227090",
+      "scrape_count": 4,
       "age_years": 25,
       "is_classic": true,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.272036"
+      "is_vintage": false
     },
     {
       "vin": "WP0AA29911S623356",
@@ -77,18 +76,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$996",
+      "bat_current_bid": "$2,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:12:53.025460",
-      "last_updated": "2025-09-18T17:41:29.277338",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.231417",
+      "scrape_count": 4,
       "age_years": 24,
       "is_classic": true,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.277341"
+      "price_updated": "2025-09-19T04:35:22.231419"
     },
     {
       "vin": "WP0AA29926S715132",
@@ -124,12 +123,11 @@
       "bat_sold_price": "$57,500",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:16:23.090330",
-      "last_updated": "2025-09-18T17:41:29.271550",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.231482",
+      "scrape_count": 4,
       "age_years": 19,
       "is_classic": true,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.271554"
+      "is_vintage": false
     },
     {
       "vin": "WP0AA2992TS323246",
@@ -199,17 +197,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$37,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$31,250",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:19:05.493846",
-      "last_updated": "2025-09-18T17:41:29.271404",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229493",
+      "scrape_count": 4,
       "age_years": 19,
       "is_classic": true,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.229495"
     },
     {
       "vin": "WP0AA2993XS622346",
@@ -237,18 +236,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,835,000",
+      "bat_current_bid": "$1,900,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$33,400",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:35:04.535042",
-      "last_updated": "2025-09-18T17:41:29.272307",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229818",
+      "scrape_count": 4,
       "age_years": 26,
       "is_classic": true,
       "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.272310"
+      "price_updated": "2025-09-19T04:35:22.229821"
     },
     {
       "vin": "WP0AA29957S710346",
@@ -285,8 +284,8 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:22:56.824568",
-      "last_updated": "2025-09-18T17:41:29.275188",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228435",
+      "scrape_count": 4,
       "age_years": 18,
       "is_classic": true,
       "is_vintage": false
@@ -319,18 +318,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,885,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$215,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:09:40.944440",
-      "last_updated": "2025-09-18T17:41:29.274370",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.230091",
+      "scrape_count": 4,
       "age_years": 27,
       "is_classic": true,
       "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.274372"
+      "price_updated": "2025-09-19T04:35:22.230093"
     },
     {
       "vin": "WP0AA29963S621976",
@@ -400,18 +399,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$435,000",
+      "bat_current_bid": "$37,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$40,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:37:33.028571",
-      "last_updated": "2025-09-18T17:41:29.274399",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228999",
+      "scrape_count": 4,
       "age_years": 19,
       "is_classic": true,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.274402"
+      "price_updated": "2025-09-19T04:35:22.229002"
     },
     {
       "vin": "WP0AA2997XS624522",
@@ -446,12 +445,11 @@
       "bat_sold_price": "$19,550",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:34:46.550512",
-      "last_updated": "2025-09-18T17:41:29.276873",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227523",
+      "scrape_count": 4,
       "age_years": 26,
       "is_classic": true,
-      "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.276876"
+      "is_vintage": true
     },
     {
       "vin": "WP0AA29983S621283",
@@ -482,18 +480,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$33,996",
+      "bat_current_bid": "$39,996",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:21:51.097213",
-      "last_updated": "2025-09-18T17:41:29.276533",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.231510",
+      "scrape_count": 4,
       "age_years": 22,
       "is_classic": true,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.276535"
+      "price_updated": "2025-09-19T04:35:22.231512"
     },
     {
       "vin": "WP0AA29984S622967",
@@ -512,11 +510,10 @@
       "bat_title": "7k-Mile 2004 Porsche 911 Carrera 4S Coupe 6-Speed",
       "bat_mileage": "7,200",
       "bat_location": "Located in United States View all listings Notify me about new listings This 2004 Porsche 911 Carrera 4S coupe has 7k miles, an",
-      "bat_auction_status": "active",
-      "bat_end_date": "",
-      "bat_description": "Get this 7k-Mile 2004 Porsche 911 Carrera 4S Coupe 6-Speed delivered with Bring a Trailer Shipping.Transparent pricingReal time trackingEasy and secureLearn more",
+      "bat_auction_status": "sold",
+      "bat_end_date": "2025-09-18",
+      "bat_description": "Please address the errors below",
       "bat_features": [
-        "Sport Exhaust",
         "Sunroof",
         "Air Conditioning",
         "Leather",
@@ -525,17 +522,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$71,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
-      "bat_sold_price": "",
+      "bat_sold_price": "$81,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:36:27.497573",
-      "last_updated": "2025-09-18T17:41:29.271507",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229348",
+      "scrape_count": 4,
       "age_years": 21,
       "is_classic": true,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.229351"
     },
     {
       "vin": "WP0AA2998TS323283",
@@ -564,17 +562,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$4,000",
+      "bat_current_bid": "$120,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T17:16:14.938115",
-      "last_updated": "2025-09-18T17:16:15.049882",
-      "scrape_count": 1,
+      "last_updated": "2025-09-19T04:35:22.225358",
+      "scrape_count": 2,
       "age_years": 29,
       "is_classic": true,
-      "is_vintage": true
+      "is_vintage": true,
+      "price_updated": "2025-09-19T04:35:22.225361"
     },
     {
       "vin": "WP0AA2998VS321052",
@@ -609,12 +608,11 @@
       "bat_sold_price": "$118,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:15:47.534520",
-      "last_updated": "2025-09-18T17:41:29.277824",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227494",
+      "scrape_count": 4,
       "age_years": 28,
       "is_classic": true,
-      "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.277827"
+      "is_vintage": true
     },
     {
       "vin": "WP0AA2998XS623296",
@@ -642,17 +640,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$47,246",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:14:40.781055",
-      "last_updated": "2025-09-18T17:41:29.277235",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.231238",
+      "scrape_count": 4,
       "age_years": 26,
       "is_classic": true,
-      "is_vintage": true
+      "is_vintage": true,
+      "price_updated": "2025-09-19T04:35:22.231241"
     },
     {
       "vin": "WP0AA2998XS625162",
@@ -686,12 +685,11 @@
       "bat_sold_price": "$31,250",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:23:46.287826",
-      "last_updated": "2025-09-18T17:41:29.271843",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229945",
+      "scrape_count": 4,
       "age_years": 26,
       "is_classic": true,
-      "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.271846"
+      "is_vintage": true
     },
     {
       "vin": "WP0AA29997S710446",
@@ -728,8 +726,8 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:23:08.576563",
-      "last_updated": "2025-09-18T17:41:29.277409",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.224701",
+      "scrape_count": 4,
       "age_years": 18,
       "is_classic": true,
       "is_vintage": false
@@ -767,12 +765,11 @@
       "bat_sold_price": "$23,750",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:25:37.348701",
-      "last_updated": "2025-09-18T17:41:29.277089",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.226424",
+      "scrape_count": 4,
       "age_years": 26,
       "is_classic": true,
-      "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.277092"
+      "is_vintage": true
     },
     {
       "vin": "WP0AA299XTS322538",
@@ -807,12 +804,11 @@
       "bat_sold_price": "$81,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:32:29.920533",
-      "last_updated": "2025-09-18T17:41:29.276843",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.226986",
+      "scrape_count": 4,
       "age_years": 29,
       "is_classic": true,
-      "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.276845"
+      "is_vintage": true
     },
     {
       "vin": "WP0AA299XXS626362",
@@ -846,12 +842,11 @@
       "bat_sold_price": "$30,246",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:37:24.685818",
-      "last_updated": "2025-09-18T17:41:29.275585",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229790",
+      "scrape_count": 4,
       "age_years": 26,
       "is_classic": true,
-      "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.275588"
+      "is_vintage": true
     },
     {
       "vin": "WP0AA2A92FS106943",
@@ -883,17 +878,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$47,500",
+      "bat_current_bid": "$48,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:10:52.512105",
-      "last_updated": "2025-09-18T17:41:29.271594",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.226792",
+      "scrape_count": 4,
       "age_years": 10,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.226794"
     },
     {
       "vin": "WP0AB0911HS121369",
@@ -928,8 +924,8 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:22:47.310568",
-      "last_updated": "2025-09-18T17:41:29.271449",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.226614",
+      "scrape_count": 4,
       "age_years": 38,
       "is_classic": true,
       "is_vintage": true
@@ -967,12 +963,11 @@
       "bat_sold_price": "$77,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:07:46.428705",
-      "last_updated": "2025-09-18T17:41:29.271069",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.231541",
+      "scrape_count": 4,
       "age_years": 37,
       "is_classic": true,
-      "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.271074"
+      "is_vintage": true
     },
     {
       "vin": "WP0AB0913ES121305",
@@ -1001,18 +996,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,675,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$81,111",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:19:39.854486",
-      "last_updated": "2025-09-18T17:41:29.274465",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229220",
+      "scrape_count": 4,
       "age_years": 41,
       "is_classic": true,
       "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.274467"
+      "price_updated": "2025-09-19T04:35:22.229222"
     },
     {
       "vin": "WP0AB0914HS122256",
@@ -1041,17 +1036,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$8,150",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:22:16.328134",
-      "last_updated": "2025-09-18T17:41:29.278182",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228544",
+      "scrape_count": 4,
       "age_years": 38,
       "is_classic": true,
-      "is_vintage": true
+      "is_vintage": true,
+      "price_updated": "2025-09-19T04:35:22.228546"
     },
     {
       "vin": "WP0AB0915HS121875",
@@ -1080,17 +1076,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$1,831,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$93,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:14:04.427602",
-      "last_updated": "2025-09-18T17:41:29.272170",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229976",
+      "scrape_count": 4,
       "age_years": 38,
       "is_classic": true,
-      "is_vintage": true
+      "is_vintage": true,
+      "price_updated": "2025-09-19T04:35:22.229979"
     },
     {
       "vin": "WP0AB0917GS122394",
@@ -1120,18 +1117,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,500,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$143,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:21:34.783798",
-      "last_updated": "2025-09-18T17:41:29.276905",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227840",
+      "scrape_count": 4,
       "age_years": 39,
       "is_classic": true,
       "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.276907"
+      "price_updated": "2025-09-19T04:35:22.227843"
     },
     {
       "vin": "WP0AB0919FS121696",
@@ -1160,17 +1157,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$6,666",
+      "bat_current_bid": "$29,911",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T17:21:44.046507",
-      "last_updated": "2025-09-18T17:21:44.171815",
-      "scrape_count": 1,
+      "last_updated": "2025-09-19T04:35:22.227061",
+      "scrape_count": 2,
       "age_years": 40,
       "is_classic": true,
-      "is_vintage": true
+      "is_vintage": true,
+      "price_updated": "2025-09-19T04:35:22.227064"
     },
     {
       "vin": "WP0AB0919KS120638",
@@ -1199,18 +1197,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,910,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": true,
       "bat_no_reserve": true,
       "bat_sold_price": "$115,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:30:35.422513",
-      "last_updated": "2025-09-18T17:41:29.276614",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.230879",
+      "scrape_count": 4,
       "age_years": 36,
       "is_classic": true,
       "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.276616"
+      "price_updated": "2025-09-19T04:35:22.230881"
     },
     {
       "vin": "WP0AB2963LS452003",
@@ -1239,18 +1237,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,835,000",
+      "bat_current_bid": "$1,900,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$80,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:26:55.219466",
-      "last_updated": "2025-09-18T17:41:29.272339",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.226503",
+      "scrape_count": 4,
       "age_years": 35,
       "is_classic": true,
       "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.272342"
+      "price_updated": "2025-09-19T04:35:22.226505"
     },
     {
       "vin": "WP0AB2965NS420222",
@@ -1279,18 +1277,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,910,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$72,500",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:27:40.865773",
-      "last_updated": "2025-09-18T17:41:29.276695",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.224775",
+      "scrape_count": 4,
       "age_years": 33,
       "is_classic": true,
       "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.276697"
+      "price_updated": "2025-09-19T04:35:22.224779"
     },
     {
       "vin": "WP0AB2967MS410354",
@@ -1319,18 +1317,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$38,250",
+      "bat_current_bid": "$45,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:19:53.038250",
-      "last_updated": "2025-09-18T17:41:29.273400",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229717",
+      "scrape_count": 4,
       "age_years": 35,
       "is_classic": true,
       "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.273403"
+      "price_updated": "2025-09-19T04:35:22.229719"
     },
     {
       "vin": "WP0AB2969NS420594",
@@ -1359,18 +1357,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,550,000",
+      "bat_current_bid": "$36,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$120,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:23:20.862961",
-      "last_updated": "2025-09-18T17:41:29.272995",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.230760",
+      "scrape_count": 4,
       "age_years": 33,
       "is_classic": true,
       "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.272998"
+      "price_updated": "2025-09-19T04:35:22.230762"
     },
     {
       "vin": "WP0AB296XMS410803",
@@ -1400,18 +1398,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$425,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$127,500",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:28:25.365018",
-      "last_updated": "2025-09-18T17:41:29.272640",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228666",
+      "scrape_count": 4,
       "age_years": 34,
       "is_classic": true,
       "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.272644"
+      "price_updated": "2025-09-19T04:35:22.228668"
     },
     {
       "vin": "WP0AB296XMS411515",
@@ -1440,17 +1438,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$2,200,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$89,500",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:21:10.102563",
-      "last_updated": "2025-09-18T17:41:29.273321",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.226646",
+      "scrape_count": 4,
       "age_years": 34,
       "is_classic": true,
-      "is_vintage": true
+      "is_vintage": true,
+      "price_updated": "2025-09-19T04:35:22.226649"
     },
     {
       "vin": "WP0AB29904S685428",
@@ -1487,8 +1486,8 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:27:54.116483",
-      "last_updated": "2025-09-18T17:41:29.272957",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.230683",
+      "scrape_count": 4,
       "age_years": 21,
       "is_classic": true,
       "is_vintage": false
@@ -1528,18 +1527,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$55,500",
+      "bat_current_bid": "$65,522",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:11:55.137368",
-      "last_updated": "2025-09-18T17:41:29.274433",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228512",
+      "scrape_count": 4,
       "age_years": 16,
       "is_classic": true,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.274435"
+      "price_updated": "2025-09-19T04:35:22.228514"
     },
     {
       "vin": "WP0AB29915S742110",
@@ -1578,12 +1577,52 @@
       "bat_sold_price": "$57,500",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:39:23.107430",
-      "last_updated": "2025-09-18T17:41:29.276096",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229252",
+      "scrape_count": 4,
       "age_years": 20,
       "is_classic": true,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.276100"
+      "is_vintage": false
+    },
+    {
+      "vin": "WP0AB29927S731152",
+      "make": "PORSCHE",
+      "model": "911",
+      "model_year": "2007",
+      "manufacturer": "DR. ING. H.C.F. PORSCHE AG",
+      "body_class": "Coupe",
+      "doors": "2",
+      "fuel_type": "Gasoline",
+      "engine_cylinders": "6",
+      "displacement_l": "",
+      "drive_type": "RWD",
+      "bat_listing_id": "2007-porsche-911-carrera-s-coupe-70",
+      "bat_url": "https://bringatrailer.com/listing/2007-porsche-911-carrera-s-coupe-70/",
+      "bat_title": "32k-Mile 2007 Porsche 911 Carrera S Coupe 6-Speed",
+      "bat_mileage": "24,140",
+      "bat_location": "Located in United States View all listings Notify me about new listings This 2007 Porsche 911 Carrera S coupe has remained registered in California since new, an",
+      "bat_auction_status": "active",
+      "bat_end_date": "",
+      "bat_description": "Get this 32k-Mile 2007 Porsche 911 Carrera S Coupe 6-Speed delivered with Bring a Trailer Shipping.Transparent pricingReal time trackingEasy and secureLearn more",
+      "bat_features": [
+        "Pasm",
+        "Sunroof",
+        "Leather",
+        "Bose",
+        "Xenon",
+        "Led"
+      ],
+      "bat_photo_count": 20,
+      "bat_current_bid": "$52,000",
+      "bat_reserve_met": false,
+      "bat_no_reserve": true,
+      "bat_sold_price": "",
+      "source": "BringATrailer",
+      "first_scraped": "2025-09-19T04:09:01.927142",
+      "last_updated": "2025-09-19T04:09:02.072929",
+      "scrape_count": 1,
+      "age_years": 18,
+      "is_classic": true,
+      "is_vintage": false
     },
     {
       "vin": "WP0AB29929S721482",
@@ -1621,8 +1660,8 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:16:42.284029",
-      "last_updated": "2025-09-18T17:41:29.274340",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227875",
+      "scrape_count": 4,
       "age_years": 16,
       "is_classic": true,
       "is_vintage": false
@@ -1661,8 +1700,8 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:13:05.373238",
-      "last_updated": "2025-09-18T17:41:29.274062",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.225298",
+      "scrape_count": 4,
       "age_years": 20,
       "is_classic": true,
       "is_vintage": false
@@ -1704,8 +1743,8 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:25:57.628990",
-      "last_updated": "2025-09-18T17:41:29.274675",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.230479",
+      "scrape_count": 4,
       "age_years": 19,
       "is_classic": true,
       "is_vintage": false
@@ -1747,12 +1786,11 @@
       "bat_sold_price": "$73,500",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:24:57.179996",
-      "last_updated": "2025-09-18T17:41:29.273700",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.226719",
+      "scrape_count": 4,
       "age_years": 19,
       "is_classic": true,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.273702"
+      "is_vintage": false
     },
     {
       "vin": "WP0AB29939S721376",
@@ -1784,17 +1822,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$12,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$87,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:26:42.962214",
-      "last_updated": "2025-09-18T17:41:29.276975",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228265",
+      "scrape_count": 4,
       "age_years": 16,
       "is_classic": true,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.228268"
     },
     {
       "vin": "WP0AB29947S730682",
@@ -1826,17 +1865,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$37,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$43,750",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:38:42.662930",
-      "last_updated": "2025-09-18T17:41:29.271926",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.225732",
+      "scrape_count": 4,
       "age_years": 18,
       "is_classic": true,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.225736"
     },
     {
       "vin": "WP0AB29952S685826",
@@ -1916,8 +1956,8 @@
       "bat_sold_price": "$70,500",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:07:56.146527",
-      "last_updated": "2025-09-18T17:41:29.272203",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229384",
+      "scrape_count": 4,
       "age_years": 17,
       "is_classic": true,
       "is_vintage": false
@@ -1994,17 +2034,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$83,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:35:24.355053",
-      "last_updated": "2025-09-18T17:41:29.275653",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228850",
+      "scrape_count": 4,
       "age_years": 23,
       "is_classic": true,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.228853"
     },
     {
       "vin": "WP0AB29977S730563",
@@ -2044,12 +2085,11 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:31:00.873060",
-      "last_updated": "2025-09-18T17:41:29.277059",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227726",
+      "scrape_count": 4,
       "age_years": 18,
       "is_classic": true,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.277061"
+      "is_vintage": false
     },
     {
       "vin": "WP0AB29983S686714",
@@ -2068,9 +2108,9 @@
       "bat_title": "2003 Porsche 911 Turbo Coupe 6-Speed",
       "bat_mileage": "000",
       "bat_location": "Located in United States View all listings Notify me about new listings This 2003 Porsche 911 Turbo coupe was initially sold in North Carolina, sp",
-      "bat_auction_status": "active",
-      "bat_end_date": "",
-      "bat_description": "Get this 2003 Porsche 911 Turbo Coupe 6-Speed delivered with Bring a Trailer Shipping.Transparent pricingReal time trackingEasy and secureLearn more",
+      "bat_auction_status": "sold",
+      "bat_end_date": "2025-09-18",
+      "bat_description": "Please address the errors below",
       "bat_features": [
         "Sunroof",
         "Navigation",
@@ -2080,17 +2120,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$60,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
-      "bat_sold_price": "",
+      "bat_sold_price": "$65,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:15:27.393030",
-      "last_updated": "2025-09-18T17:41:29.272101",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.226084",
+      "scrape_count": 4,
       "age_years": 22,
       "is_classic": true,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.226087"
     },
     {
       "vin": "WP0AB29986S740680",
@@ -2153,9 +2194,9 @@
       "bat_title": "34k-Mile 2006 Porsche 911 Carrera S Coupe 6-Speed",
       "bat_mileage": "",
       "bat_location": "Located in United States View all listings Notify me about new listings This 2006 Porsche 911 Carrera S coupe is finished in Speed Yellow over a black full leather interior with sport seats, an",
-      "bat_auction_status": "active",
-      "bat_end_date": "",
-      "bat_description": "Get this 34k-Mile 2006 Porsche 911 Carrera S Coupe 6-Speed delivered with Bring a Trailer Shipping.Transparent pricingReal time trackingEasy and secureLearn more",
+      "bat_auction_status": "sold",
+      "bat_end_date": "2025-09-18",
+      "bat_description": "Please address the errors below",
       "bat_features": [
         "Pasm",
         "Sport Exhaust",
@@ -2166,17 +2207,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$56,000",
+      "bat_current_bid": "$37,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
-      "bat_sold_price": "",
+      "bat_sold_price": "$64,500",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:17:41.290479",
-      "last_updated": "2025-09-18T17:41:29.275299",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.226583",
+      "scrape_count": 4,
       "age_years": 19,
       "is_classic": true,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.226585"
     },
     {
       "vin": "WP0AB299X2S687457",
@@ -2206,17 +2248,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$1,831,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$41,500",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:32:39.940174",
-      "last_updated": "2025-09-18T17:41:29.272068",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229526",
+      "scrape_count": 4,
       "age_years": 23,
       "is_classic": true,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.229528"
     },
     {
       "vin": "WP0AB2A91DS121363",
@@ -2255,12 +2298,11 @@
       "bat_sold_price": "$84,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:33:13.929499",
-      "last_updated": "2025-09-18T17:41:29.272553",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.226046",
+      "scrape_count": 4,
       "age_years": 12,
       "is_classic": false,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.272556"
+      "is_vintage": false
     },
     {
       "vin": "WP0AB2A92PS221301",
@@ -2292,18 +2334,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,800,000",
+      "bat_current_bid": "$1,500,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:25:24.131916",
-      "last_updated": "2025-09-18T17:41:29.271215",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228969",
+      "scrape_count": 4,
       "age_years": 2,
       "is_classic": false,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.271218"
+      "price_updated": "2025-09-19T04:35:22.228972"
     },
     {
       "vin": "WP0AB2A94BS721095",
@@ -2335,12 +2377,11 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:10:01.368334",
-      "last_updated": "2025-09-18T17:41:29.277204",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.225025",
+      "scrape_count": 4,
       "age_years": 14,
       "is_classic": false,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.277207"
+      "is_vintage": false
     },
     {
       "vin": "WP0AB2A94DS120417",
@@ -2373,17 +2414,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$1,905,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$72,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:29:14.795567",
-      "last_updated": "2025-09-18T17:41:29.275906",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229463",
+      "scrape_count": 4,
       "age_years": 12,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.229465"
     },
     {
       "vin": "WP0AB2A95AS720827",
@@ -2422,12 +2464,11 @@
       "bat_sold_price": "$85,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:34:02.109513",
-      "last_updated": "2025-09-18T17:41:29.274866",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.230648",
+      "scrape_count": 4,
       "age_years": 15,
       "is_classic": false,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.274868"
+      "is_vintage": false
     },
     {
       "vin": "WP0AB2A95HS123445",
@@ -2466,12 +2507,11 @@
       "bat_sold_price": "$114,102",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:20:02.889060",
-      "last_updated": "2025-09-18T17:41:29.274028",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228779",
+      "scrape_count": 4,
       "age_years": 8,
       "is_classic": false,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.274030"
+      "is_vintage": false
     },
     {
       "vin": "WP0AB2A96FS125105",
@@ -2503,17 +2543,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$12,750",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$78,500",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:07:33.785232",
-      "last_updated": "2025-09-18T17:41:29.272004",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228184",
+      "scrape_count": 4,
       "age_years": 10,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.228187"
     },
     {
       "vin": "WP0AB2A96RS279026",
@@ -2553,8 +2594,8 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:11:12.939656",
-      "last_updated": "2025-09-18T17:41:29.277669",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228224",
+      "scrape_count": 4,
       "age_years": 1,
       "is_classic": false,
       "is_vintage": false
@@ -2597,12 +2638,11 @@
       "bat_sold_price": "$121,991",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:15:01.592938",
-      "last_updated": "2025-09-18T17:41:29.276436",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.226912",
+      "scrape_count": 4,
       "age_years": 9,
       "is_classic": false,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.276438"
+      "is_vintage": false
     },
     {
       "vin": "WP0AB2A98JS123185",
@@ -2635,17 +2675,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$60,000",
+      "bat_current_bid": "$62,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:17:03.863463",
-      "last_updated": "2025-09-18T17:41:29.270938",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.231273",
+      "scrape_count": 4,
       "age_years": 7,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.231275"
     },
     {
       "vin": "WP0AB2A99BS720668",
@@ -2677,17 +2718,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$13,750",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$83,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:11:24.137583",
-      "last_updated": "2025-09-18T17:41:29.277585",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.231574",
+      "scrape_count": 4,
       "age_years": 14,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.231576"
     },
     {
       "vin": "WP0AB2A99CS120234",
@@ -2726,12 +2768,11 @@
       "bat_sold_price": "$75,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:34:13.809130",
-      "last_updated": "2025-09-18T17:41:29.273447",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.225156",
+      "scrape_count": 4,
       "age_years": 13,
       "is_classic": false,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.273450"
+      "is_vintage": false
     },
     {
       "vin": "WP0AB2A99GS122443",
@@ -2764,18 +2805,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$16,750",
+      "bat_current_bid": "$8,300",
       "bat_reserve_met": true,
       "bat_no_reserve": true,
       "bat_sold_price": "$120,991",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:23:30.432494",
-      "last_updated": "2025-09-18T17:41:29.277502",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227909",
+      "scrape_count": 4,
       "age_years": 9,
       "is_classic": false,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.277505"
+      "price_updated": "2025-09-19T04:35:22.227912"
     },
     {
       "vin": "WP0AB2A99JS124071",
@@ -2807,17 +2848,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$30,000",
+      "bat_current_bid": "$53,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:33:39.131272",
-      "last_updated": "2025-09-18T17:41:29.272732",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.231164",
+      "scrape_count": 4,
       "age_years": 7,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.231167"
     },
     {
       "vin": "WP0AB2A99PS220095",
@@ -2848,18 +2890,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,400,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$152,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:18:46.615859",
-      "last_updated": "2025-09-18T17:41:29.276811",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.226337",
+      "scrape_count": 4,
       "age_years": 2,
       "is_classic": false,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.276813"
+      "price_updated": "2025-09-19T04:35:22.226341"
     },
     {
       "vin": "WP0AB2A99RS225137",
@@ -2887,18 +2929,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$24,250",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$320,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:08:19.308620",
-      "last_updated": "2025-09-18T17:41:29.276940",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227807",
+      "scrape_count": 4,
       "age_years": 1,
       "is_classic": false,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.276942"
+      "price_updated": "2025-09-19T04:35:22.227810"
     },
     {
       "vin": "WP0AB2A9XAS720709",
@@ -2917,9 +2959,9 @@
       "bat_title": "2010 Porsche 911 Carrera 4S Coupe",
       "bat_mileage": "",
       "bat_location": "Located in United States View all listings Notify me about new listings This 2010 Porsche 911 Carrera 4S coupe has been registered in Florida, So",
-      "bat_auction_status": "active",
-      "bat_end_date": "",
-      "bat_description": "Get this 2010 Porsche 911 Carrera 4S Coupe delivered with Bring a Trailer Shipping.Transparent pricingReal time trackingEasy and secureLearn more",
+      "bat_auction_status": "sold",
+      "bat_end_date": "2025-09-18",
+      "bat_description": "Please address the errors below",
       "bat_features": [
         "Sport Chrono",
         "Pasm",
@@ -2930,15 +2972,59 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$40,250",
+      "bat_current_bid": "$36,500",
+      "bat_reserve_met": false,
+      "bat_no_reserve": true,
+      "bat_sold_price": "$56,500",
+      "source": "BringATrailer",
+      "first_scraped": "2025-09-18T02:22:37.795020",
+      "last_updated": "2025-09-19T04:35:22.231453",
+      "scrape_count": 4,
+      "age_years": 15,
+      "is_classic": false,
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.231455"
+    },
+    {
+      "vin": "WP0AB2A9XCS120968",
+      "make": "PORSCHE",
+      "model": "911",
+      "model_year": "2012",
+      "manufacturer": "DR. ING. H.C.F. PORSCHE AG",
+      "body_class": "Coupe",
+      "doors": "2",
+      "fuel_type": "Gasoline",
+      "engine_cylinders": "6",
+      "displacement_l": "",
+      "drive_type": "RWD",
+      "bat_listing_id": "2012-porsche-911-991-carrera-s-coupe-36",
+      "bat_url": "https://bringatrailer.com/listing/2012-porsche-911-991-carrera-s-coupe-36/",
+      "bat_title": "2012 Porsche 911 Carrera S Coupe",
+      "bat_mileage": "",
+      "bat_location": "Located in United States View all listings Notify me about new listings This 2012 Porsche 911 Carrera S coupe has 60k miles and was purchased by the seller as a Porsche Approved Certified Pre-Owned vehicle in 2024. It is finished in GT Silver Metallic over Luxor Beige Standard leather and is powered by a 3.8-liter flat-six linked with a seven-speed PDK transaxle and a limited-slip differential. Equipment includes the Burmester Audio, Pr",
+      "bat_auction_status": "active",
+      "bat_end_date": "",
+      "bat_description": "Get this 2012 Porsche 911 Carrera S Coupe delivered with Bring a Trailer Shipping.Transparent pricingReal time trackingEasy and secureLearn more",
+      "bat_features": [
+        "Sport Chrono",
+        "Pasm",
+        "Pdls",
+        "Sport Exhaust",
+        "Sunroof",
+        "Leather",
+        "Xenon",
+        "Led"
+      ],
+      "bat_photo_count": 20,
+      "bat_current_bid": "$25,250",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
-      "first_scraped": "2025-09-18T02:22:37.795020",
-      "last_updated": "2025-09-18T17:41:29.274833",
-      "scrape_count": 3,
-      "age_years": 15,
+      "first_scraped": "2025-09-19T04:32:46.951401",
+      "last_updated": "2025-09-19T04:32:47.072284",
+      "scrape_count": 1,
+      "age_years": 13,
       "is_classic": false,
       "is_vintage": false
     },
@@ -2973,17 +3059,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$112,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$112,555",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:15:59.016741",
-      "last_updated": "2025-09-18T17:41:29.275621",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.226265",
+      "scrape_count": 4,
       "age_years": 8,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.226269"
     },
     {
       "vin": "WP0AB2A9XLS229026",
@@ -3017,17 +3104,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$37,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$115,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:39:11.711482",
-      "last_updated": "2025-09-18T17:41:29.277862",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228400",
+      "scrape_count": 4,
       "age_years": 5,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.228403"
     },
     {
       "vin": "WP0AC29967S792873",
@@ -3039,20 +3127,18 @@
       "doors": "2",
       "fuel_type": "Gasoline",
       "engine_cylinders": "6",
-      "displacement_l": "3.2",
+      "displacement_l": "",
       "drive_type": "RWD",
       "bat_listing_id": "2007-porsche-911-gt3-rs-27",
       "bat_url": "https://bringatrailer.com/listing/2007-porsche-911-gt3-rs-27/",
       "bat_title": "10k-Mile 2007 Porsche 911 GT3 RS",
-      "bat_mileage": "",
+      "bat_mileage": "600",
       "bat_location": "Located in United States View all listings Notify me about new listings This 2007 Porsche 911 997.1 GT3 RS is one of 410 examples built for the US market during a two-year production run, an",
       "bat_auction_status": "active",
       "bat_end_date": "",
       "bat_description": "Get this 10k-Mile 2007 Porsche 911 GT3 RS delivered with Bring a Trailer Shipping.Transparent pricingReal time trackingEasy and secureLearn more",
       "bat_features": [
-        "Sport Chrono",
         "Pasm",
-        "Pccb",
         "Air Conditioning",
         "Leather",
         "Alcantara",
@@ -3066,8 +3152,8 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:22:27.256622",
-      "last_updated": "2025-09-18T17:41:29.276774",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.231003",
+      "scrape_count": 4,
       "age_years": 18,
       "is_classic": true,
       "is_vintage": false
@@ -3099,18 +3185,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$22,750",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$257,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:17:30.589069",
-      "last_updated": "2025-09-18T17:41:29.274747",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.225451",
+      "scrape_count": 4,
       "age_years": 28,
       "is_classic": true,
       "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.274750"
+      "price_updated": "2025-09-19T04:35:22.225453"
     },
     {
       "vin": "WP0AC2A90JS175505",
@@ -3140,17 +3226,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$9,600",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$275,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:14:14.049525",
-      "last_updated": "2025-09-18T17:41:29.274638",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.224961",
+      "scrape_count": 4,
       "age_years": 7,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.224964"
     },
     {
       "vin": "WP0AC2A90PS270493",
@@ -3186,12 +3273,11 @@
       "bat_sold_price": "$258,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:31:55.425305",
-      "last_updated": "2025-09-18T17:41:29.272239",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229646",
+      "scrape_count": 4,
       "age_years": 2,
       "is_classic": false,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.272242"
+      "is_vintage": false
     },
     {
       "vin": "WP0AC2A90SS274133",
@@ -3224,18 +3310,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,400,000",
+      "bat_current_bid": "$47,805",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:12:39.639777",
-      "last_updated": "2025-09-18T17:41:29.277971",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.225646",
+      "scrape_count": 4,
       "age_years": 0,
       "is_classic": false,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.277973"
+      "price_updated": "2025-09-19T04:35:22.225649"
     },
     {
       "vin": "WP0AC2A93AS783812",
@@ -3267,17 +3353,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$56,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$420,997",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:36:58.860871",
-      "last_updated": "2025-09-18T17:41:29.275265",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.230559",
+      "scrape_count": 4,
       "age_years": 15,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.230562"
     },
     {
       "vin": "WP0AC2A93ES183474",
@@ -3294,13 +3381,14 @@
       "bat_listing_id": "2014-porsche-911-gt3-42",
       "bat_url": "https://bringatrailer.com/listing/2014-porsche-911-gt3-42/",
       "bat_title": "16k-Mile 2014 Porsche 911 GT3",
-      "bat_mileage": "",
+      "bat_mileage": "1,600",
       "bat_location": "Located in United States View all listings Notify me about new listings This 2014 Porsche 911 GT3 has 16k miles through the seller’s purchase in 2024, an",
       "bat_auction_status": "active",
       "bat_end_date": "",
       "bat_description": "Please address the errors below",
       "bat_features": [
         "Pdls",
+        "Pccb",
         "Navigation",
         "Leather",
         "Alcantara",
@@ -3308,17 +3396,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$124,000",
+      "bat_current_bid": "$125,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:17:59.485845",
-      "last_updated": "2025-09-18T17:41:29.275415",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.224905",
+      "scrape_count": 4,
       "age_years": 11,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.224909"
     },
     {
       "vin": "WP0AC2A94NS270056",
@@ -3345,18 +3434,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,786,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:12:06.630916",
-      "last_updated": "2025-09-18T17:41:29.272277",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.225690",
+      "scrape_count": 4,
       "age_years": 3,
       "is_classic": false,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.272279"
+      "price_updated": "2025-09-19T04:35:22.225693"
     },
     {
       "vin": "WP0AC2A94NS270493",
@@ -3386,17 +3475,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$53,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$289,999",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:17:16.924174",
-      "last_updated": "2025-09-18T17:41:29.278218",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.225204",
+      "scrape_count": 4,
       "age_years": 3,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.225207"
     },
     {
       "vin": "WP0AC2A97AS783294",
@@ -3426,17 +3516,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$22,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:26:11.472086",
-      "last_updated": "2025-09-18T17:41:29.271332",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229564",
+      "scrape_count": 4,
       "age_years": 15,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.229566"
     },
     {
       "vin": "WP0AC2A97FS183284",
@@ -3468,17 +3559,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:36:03.660660",
-      "last_updated": "2025-09-18T17:41:29.273993",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227611",
+      "scrape_count": 4,
       "age_years": 10,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.227613"
     },
     {
       "vin": "WP0AC2A97JS176473",
@@ -3509,15 +3601,57 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$186,000",
+      "bat_current_bid": "$222,880",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:13:55.037936",
-      "last_updated": "2025-09-18T17:41:29.275159",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229150",
+      "scrape_count": 4,
       "age_years": 7,
+      "is_classic": false,
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.229153"
+    },
+    {
+      "vin": "WP0AC2A97SS274355",
+      "make": "PORSCHE",
+      "model": "911",
+      "model_year": "2025",
+      "manufacturer": "DR. ING. H.C.F. PORSCHE AG",
+      "body_class": "Coupe",
+      "doors": "2",
+      "fuel_type": "Gasoline",
+      "engine_cylinders": "6",
+      "displacement_l": "",
+      "drive_type": "RWD",
+      "bat_listing_id": "2025-porsche-911-gt3-touring-5",
+      "bat_url": "https://bringatrailer.com/listing/2025-porsche-911-gt3-touring-5/",
+      "bat_title": "2025 Porsche 911 GT3 Touring Lightweight 6-Speed",
+      "bat_mileage": "14",
+      "bat_location": "Located in United States View all listings Notify me about new listings This 2025 Porsche 911 GT3 Touring has 14 miles and was ordered with approximately $79k in options, so",
+      "bat_auction_status": "active",
+      "bat_end_date": "",
+      "bat_description": "Get this 2025 Porsche 911 GT3 Touring Lightweight 6-Speed delivered with Bring a Trailer Shipping.Transparent pricingReal time trackingEasy and secureLearn more",
+      "bat_features": [
+        "Sport Chrono",
+        "Pasm",
+        "Navigation",
+        "Leather",
+        "Bose",
+        "Led"
+      ],
+      "bat_photo_count": 20,
+      "bat_current_bid": "$325,000",
+      "bat_reserve_met": false,
+      "bat_no_reserve": true,
+      "bat_sold_price": "",
+      "source": "BringATrailer",
+      "first_scraped": "2025-09-19T04:08:36.591601",
+      "last_updated": "2025-09-19T04:08:37.678730",
+      "scrape_count": 1,
+      "age_years": 0,
       "is_classic": false,
       "is_vintage": false
     },
@@ -3556,12 +3690,11 @@
       "bat_sold_price": "$280,005",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:16:31.775118",
-      "last_updated": "2025-09-18T17:41:29.273827",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229036",
+      "scrape_count": 4,
       "age_years": 3,
       "is_classic": false,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.273830"
+      "is_vintage": false
     },
     {
       "vin": "WP0AD29917S785360",
@@ -3594,17 +3727,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$13,997",
+      "bat_current_bid": "$14,999",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:29:59.571852",
-      "last_updated": "2025-09-18T17:41:29.277309",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227374",
+      "scrape_count": 4,
       "age_years": 18,
       "is_classic": true,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.227377"
     },
     {
       "vin": "WP0AD29997S786742",
@@ -3636,17 +3770,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$1,830,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$80,500",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:19:18.690186",
-      "last_updated": "2025-09-18T17:41:29.271888",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229188",
+      "scrape_count": 4,
       "age_years": 18,
       "is_classic": true,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.229191"
     },
     {
       "vin": "WP0AD2A95JS157045",
@@ -3677,18 +3812,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,250,000",
+      "bat_current_bid": "$36,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:17:50.905529",
-      "last_updated": "2025-09-18T17:41:29.275690",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.225554",
+      "scrape_count": 4,
       "age_years": 7,
       "is_classic": false,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.275693"
+      "price_updated": "2025-09-19T04:35:22.225557"
     },
     {
       "vin": "WP0AD2A95MS258106",
@@ -3719,17 +3854,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$1,920,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$199,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:35:44.346984",
-      "last_updated": "2025-09-18T17:41:29.277272",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229112",
+      "scrape_count": 4,
       "age_years": 4,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.229114"
     },
     {
       "vin": "WP0AD2A96PS257163",
@@ -3760,17 +3896,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$22,750",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$204,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:26:33.695232",
-      "last_updated": "2025-09-18T17:41:29.274986",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.230129",
+      "scrape_count": 4,
       "age_years": 2,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.230131"
     },
     {
       "vin": "WP0AD2A97HS167540",
@@ -3801,17 +3938,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$72,000",
+      "bat_current_bid": "$90,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:31:44.551312",
-      "last_updated": "2025-09-18T17:41:29.277548",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227691",
+      "scrape_count": 4,
       "age_years": 8,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.227694"
     },
     {
       "vin": "WP0AD2A99ES167504",
@@ -3843,17 +3981,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$96,000",
+      "bat_current_bid": "$98,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:09:05.451114",
-      "last_updated": "2025-09-18T17:41:29.277754",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228046",
+      "scrape_count": 4,
       "age_years": 11,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.228049"
     },
     {
       "vin": "WP0AD2A9XBS766357",
@@ -3892,8 +4031,8 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:20:11.700161",
-      "last_updated": "2025-09-18T17:41:29.272138",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.225874",
+      "scrape_count": 4,
       "age_years": 14,
       "is_classic": false,
       "is_vintage": false
@@ -3927,17 +4066,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$13,250",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$625,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:09:14.969333",
-      "last_updated": "2025-09-18T17:41:29.273363",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228744",
+      "scrape_count": 4,
       "age_years": 7,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.228746"
     },
     {
       "vin": "WP0AF2A91RS273574",
@@ -3967,17 +4107,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$650,000",
+      "bat_current_bid": "$651,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:35:53.855379",
-      "last_updated": "2025-09-18T17:41:29.276656",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.225966",
+      "scrape_count": 4,
       "age_years": 1,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.225968"
     },
     {
       "vin": "WP0AF2A93RS273642",
@@ -4007,18 +4148,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,910,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$520,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:38:09.866837",
-      "last_updated": "2025-09-18T17:41:29.276736",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227416",
+      "scrape_count": 4,
       "age_years": 1,
       "is_classic": false,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.276739"
+      "price_updated": "2025-09-19T04:35:22.227418"
     },
     {
       "vin": "WP0AF2A94RS274055",
@@ -4047,17 +4188,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$37,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:11:34.932182",
-      "last_updated": "2025-09-18T17:41:29.272431",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.226685",
+      "scrape_count": 4,
       "age_years": 1,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.226688"
     },
     {
       "vin": "WP0AF2A97RS273210",
@@ -4086,17 +4228,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$37,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$656,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:27:28.486658",
-      "last_updated": "2025-09-18T17:41:29.275452",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.226006",
+      "scrape_count": 4,
       "age_years": 1,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.226009"
     },
     {
       "vin": "WP0AF2A9XGS195079",
@@ -4126,17 +4269,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$480,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:14:25.011303",
-      "last_updated": "2025-09-18T17:41:29.273788",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.224846",
+      "scrape_count": 4,
       "age_years": 9,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.224850"
     },
     {
       "vin": "WP0AG2A97PS252075",
@@ -4164,17 +4308,18 @@
         "Leather"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$37,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$582,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:36:38.134368",
-      "last_updated": "2025-09-18T17:41:29.275380",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228705",
+      "scrape_count": 4,
       "age_years": 2,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.228708"
     },
     {
       "vin": "WP0BB29937S755142",
@@ -4212,12 +4357,11 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:16:11.361003",
-      "last_updated": "2025-09-18T17:41:29.274263",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228817",
+      "scrape_count": 4,
       "age_years": 18,
       "is_classic": true,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.274266"
+      "is_vintage": false
     },
     {
       "vin": "WP0BB2A90ES133137",
@@ -4251,18 +4395,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$39,805",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$112,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:08:30.456395",
-      "last_updated": "2025-09-18T17:41:29.277931",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.225408",
+      "scrape_count": 4,
       "age_years": 11,
       "is_classic": false,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.277934"
+      "price_updated": "2025-09-19T04:35:22.225411"
     },
     {
       "vin": "WP0BB2A92KS126427",
@@ -4299,12 +4443,11 @@
       "bat_sold_price": "$143,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:18:09.138075",
-      "last_updated": "2025-09-18T17:41:29.275554",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228095",
+      "scrape_count": 4,
       "age_years": 6,
       "is_classic": false,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.275556"
+      "is_vintage": false
     },
     {
       "vin": "WP0BB2A95RS233238",
@@ -4339,12 +4482,11 @@
       "bat_sold_price": "$204,204",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:18:29.933070",
-      "last_updated": "2025-09-18T17:41:29.273189",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.231334",
+      "scrape_count": 4,
       "age_years": 1,
       "is_classic": false,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.273193"
+      "is_vintage": false
     },
     {
       "vin": "WP0BB2A96PS233391",
@@ -4380,12 +4522,11 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:11:01.904382",
-      "last_updated": "2025-09-18T17:41:29.277793",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229074",
+      "scrape_count": 4,
       "age_years": 2,
       "is_classic": false,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.277796"
+      "is_vintage": false
     },
     {
       "vin": "WP0BB2A98GS136743",
@@ -4424,12 +4565,11 @@
       "bat_sold_price": "$169,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:18:18.380522",
-      "last_updated": "2025-09-18T17:41:29.272596",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.230016",
+      "scrape_count": 4,
       "age_years": 9,
       "is_classic": false,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.272599"
+      "is_vintage": false
     },
     {
       "vin": "WP0BB2A99FS135065",
@@ -4461,17 +4601,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$167,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:10:10.853112",
-      "last_updated": "2025-09-18T17:41:29.273667",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.226831",
+      "scrape_count": 4,
       "age_years": 10,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.226834"
     },
     {
       "vin": "WP0BB2A99RS234196",
@@ -4500,17 +4641,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:23:56.668075",
-      "last_updated": "2025-09-18T17:41:29.273957",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227950",
+      "scrape_count": 4,
       "age_years": 1,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.227952"
     },
     {
       "vin": "WP0CA29901S654882",
@@ -4544,12 +4686,11 @@
       "bat_sold_price": "$20,050",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:13:21.298738",
-      "last_updated": "2025-09-18T17:41:29.271156",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227653",
+      "scrape_count": 4,
       "age_years": 24,
       "is_classic": true,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.271160"
+      "is_vintage": false
     },
     {
       "vin": "WP0CA29911S651392",
@@ -4617,18 +4758,55 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$16,750",
+      "bat_current_bid": "$36,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$25,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:37:49.361635",
-      "last_updated": "2025-09-18T17:41:29.277378",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227326",
+      "scrape_count": 4,
       "age_years": 24,
       "is_classic": true,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.277380"
+      "price_updated": "2025-09-19T04:35:22.227329"
+    },
+    {
+      "vin": "WP0CA2991YS652536",
+      "make": "PORSCHE",
+      "model": "911",
+      "model_year": "2000",
+      "manufacturer": "DR. ING. H.C.F. PORSCHE AG",
+      "body_class": "Coupe",
+      "doors": "2",
+      "fuel_type": "Gasoline",
+      "engine_cylinders": "6",
+      "displacement_l": "3.8",
+      "drive_type": "AWD",
+      "bat_listing_id": "2000-porsche-911-carrera-cabriolet-81",
+      "bat_url": "https://bringatrailer.com/listing/2000-porsche-911-carrera-cabriolet-81/",
+      "bat_title": "20-Years-Owned, 3.8L-Powered 2000 Porsche 911 Carrera Cabriolet 6-Speed",
+      "bat_mileage": "79,500",
+      "bat_location": "Located in United States View all listings Notify me about new listings This 2000 Porsche 911 Carrera cabriolet was purchased by its current owner in 2005, an",
+      "bat_auction_status": "active",
+      "bat_end_date": "",
+      "bat_description": "Get this 20-Years-Owned, 3.8L-Powered 2000 Porsche 911 Carrera Cabriolet 6-Speed delivered with Bring a Trailer Shipping.Transparent pricingReal time trackingEasy and secureLearn more",
+      "bat_features": [
+        "Leather",
+        "Led"
+      ],
+      "bat_photo_count": 20,
+      "bat_current_bid": "$10,000",
+      "bat_reserve_met": false,
+      "bat_no_reserve": true,
+      "bat_sold_price": "",
+      "source": "BringATrailer",
+      "first_scraped": "2025-09-19T04:19:45.406618",
+      "last_updated": "2025-09-19T04:19:45.526475",
+      "scrape_count": 1,
+      "age_years": 25,
+      "is_classic": true,
+      "is_vintage": false
     },
     {
       "vin": "WP0CA29931S654696",
@@ -4662,12 +4840,11 @@
       "bat_sold_price": "$28,996",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:34:32.776374",
-      "last_updated": "2025-09-18T17:41:29.273870",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.230522",
+      "scrape_count": 4,
       "age_years": 24,
       "is_classic": true,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.273873"
+      "is_vintage": false
     },
     {
       "vin": "WP0CA2993VS340679",
@@ -4696,18 +4873,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$19,250",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$74,500",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:11:45.557979",
-      "last_updated": "2025-09-18T17:41:29.278149",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.231043",
+      "scrape_count": 4,
       "age_years": 28,
       "is_classic": true,
       "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.278152"
+      "price_updated": "2025-09-19T04:35:22.231046"
     },
     {
       "vin": "WP0CA2993XS655114",
@@ -4742,12 +4919,11 @@
       "bat_sold_price": "$30,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:10:30.483752",
-      "last_updated": "2025-09-18T17:41:29.275339",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227571",
+      "scrape_count": 4,
       "age_years": 26,
       "is_classic": true,
-      "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.275341"
+      "is_vintage": true
     },
     {
       "vin": "WP0CA2994WS340465",
@@ -4775,17 +4951,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$82,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$130,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:29:31.582171",
-      "last_updated": "2025-09-18T17:41:29.271790",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.226177",
+      "scrape_count": 4,
       "age_years": 27,
       "is_classic": true,
-      "is_vintage": true
+      "is_vintage": true,
+      "price_updated": "2025-09-19T04:35:22.226180"
     },
     {
       "vin": "WP0CA2994YS652420",
@@ -4821,12 +4998,11 @@
       "bat_sold_price": "$24,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:30:50.239814",
-      "last_updated": "2025-09-18T17:41:29.273625",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229686",
+      "scrape_count": 4,
       "age_years": 25,
       "is_classic": true,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.273628"
+      "is_vintage": false
     },
     {
       "vin": "WP0CA29953S652323",
@@ -4854,17 +5030,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$12,500",
+      "bat_current_bid": "$13,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:29:49.036813",
-      "last_updated": "2025-09-18T17:41:29.277449",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.225921",
+      "scrape_count": 4,
       "age_years": 22,
       "is_classic": true,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.225924"
     },
     {
       "vin": "WP0CA2995VS341655",
@@ -4892,18 +5069,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$15,500",
+      "bat_current_bid": "$1,895,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:27:18.848354",
-      "last_updated": "2025-09-18T17:41:29.275508",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.230846",
+      "scrape_count": 4,
       "age_years": 28,
       "is_classic": true,
       "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.275511"
+      "price_updated": "2025-09-19T04:35:22.230848"
     },
     {
       "vin": "WP0CA2996SS343524",
@@ -4931,17 +5108,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$30,993",
+      "bat_current_bid": "$40,993",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:12:30.170203",
-      "last_updated": "2025-09-18T17:41:29.273745",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.230217",
+      "scrape_count": 4,
       "age_years": 30,
       "is_classic": true,
-      "is_vintage": true
+      "is_vintage": true,
+      "price_updated": "2025-09-19T04:35:22.230219"
     },
     {
       "vin": "WP0CA2996YS651138",
@@ -4968,17 +5146,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$5,001",
+      "bat_current_bid": "$5,200",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:33:02.744157",
-      "last_updated": "2025-09-18T17:41:29.276302",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227130",
+      "scrape_count": 4,
       "age_years": 25,
       "is_classic": true,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.227133"
     },
     {
       "vin": "WP0CA2997VS340068",
@@ -5006,17 +5185,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$63,993",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:39:57.223611",
-      "last_updated": "2025-09-18T17:41:29.276196",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.230060",
+      "scrape_count": 4,
       "age_years": 28,
       "is_classic": true,
-      "is_vintage": true
+      "is_vintage": true,
+      "price_updated": "2025-09-19T04:35:22.230062"
     },
     {
       "vin": "WP0CA2997XS652197",
@@ -5049,12 +5229,11 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:30:25.926128",
-      "last_updated": "2025-09-18T17:41:29.275228",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.231085",
+      "scrape_count": 4,
       "age_years": 26,
       "is_classic": true,
-      "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.275230"
+      "is_vintage": true
     },
     {
       "vin": "WP0CA29981S652975",
@@ -5081,18 +5260,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,820,000",
+      "bat_current_bid": "$1,675,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$28,250",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:20:27.091367",
-      "last_updated": "2025-09-18T17:41:29.271692",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.231615",
+      "scrape_count": 4,
       "age_years": 24,
       "is_classic": true,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.271695"
+      "price_updated": "2025-09-19T04:35:22.231618"
     },
     {
       "vin": "WP0CA29982S653884",
@@ -5127,12 +5306,11 @@
       "bat_sold_price": "$27,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:13:45.869978",
-      "last_updated": "2025-09-18T17:41:29.276003",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227219",
+      "scrape_count": 4,
       "age_years": 23,
       "is_classic": true,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.276006"
+      "is_vintage": false
     },
     {
       "vin": "WP0CA2998YS650539",
@@ -5166,12 +5344,11 @@
       "bat_sold_price": "$38,996",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:24:25.119250",
-      "last_updated": "2025-09-18T17:41:29.272874",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228935",
+      "scrape_count": 4,
       "age_years": 25,
       "is_classic": true,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.272876"
+      "is_vintage": false
     },
     {
       "vin": "WP0CA29995S755506",
@@ -5202,17 +5379,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$10,997",
+      "bat_current_bid": "$21,485",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:32:18.994180",
-      "last_updated": "2025-09-18T17:41:29.272776",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.226954",
+      "scrape_count": 4,
       "age_years": 20,
       "is_classic": true,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.226956"
     },
     {
       "vin": "WP0CA2999XS654260",
@@ -5245,12 +5423,11 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:32:10.586499",
-      "last_updated": "2025-09-18T17:41:29.275821",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.225104",
+      "scrape_count": 4,
       "age_years": 26,
       "is_classic": true,
-      "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.275823"
+      "is_vintage": true
     },
     {
       "vin": "WP0CA2999XS655991",
@@ -5283,8 +5460,8 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:09:28.338192",
-      "last_updated": "2025-09-18T17:41:29.271969",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.230726",
+      "scrape_count": 4,
       "age_years": 26,
       "is_classic": true,
       "is_vintage": true
@@ -5357,17 +5534,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$36,250",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:29:04.126087",
-      "last_updated": "2025-09-18T17:41:29.273917",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228633",
+      "scrape_count": 4,
       "age_years": 13,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.228635"
     },
     {
       "vin": "WP0CA2A94ES140146",
@@ -5398,18 +5576,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,860,000",
+      "bat_current_bid": "$2,200,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$72,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:38:00.398371",
-      "last_updated": "2025-09-18T17:41:29.273239",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.226759",
+      "scrape_count": 4,
       "age_years": 11,
       "is_classic": false,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.273241"
+      "price_updated": "2025-09-19T04:35:22.226762"
     },
     {
       "vin": "WP0CB2962LS470162",
@@ -5437,17 +5615,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,750",
+      "bat_current_bid": "$3,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:13:29.341375",
-      "last_updated": "2025-09-18T17:41:29.271742",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.225828",
+      "scrape_count": 4,
       "age_years": 35,
       "is_classic": true,
-      "is_vintage": true
+      "is_vintage": true,
+      "price_updated": "2025-09-19T04:35:22.225832"
     },
     {
       "vin": "WP0CB2963LS471594",
@@ -5475,17 +5654,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$435,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$80,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:25:14.526540",
-      "last_updated": "2025-09-18T17:41:29.274588",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.230371",
+      "scrape_count": 4,
       "age_years": 35,
       "is_classic": true,
-      "is_vintage": true
+      "is_vintage": true,
+      "price_updated": "2025-09-19T04:35:22.230376"
     },
     {
       "vin": "WP0CB2968MS460611",
@@ -5519,12 +5699,50 @@
       "bat_sold_price": "$56,500",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:22:05.483025",
-      "last_updated": "2025-09-18T17:41:29.272692",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.225605",
+      "scrape_count": 4,
       "age_years": 34,
       "is_classic": true,
-      "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.272695"
+      "is_vintage": true
+    },
+    {
+      "vin": "WP0CB29924S675850",
+      "make": "PORSCHE",
+      "model": "911",
+      "model_year": "2004",
+      "manufacturer": "DR. ING. H.C.F. PORSCHE AG",
+      "body_class": "Coupe",
+      "doors": "2",
+      "fuel_type": "Gasoline",
+      "engine_cylinders": "6",
+      "displacement_l": "3.6",
+      "drive_type": "RWD",
+      "bat_listing_id": "2004-porsche-911-turbo-cabriolet-203",
+      "bat_url": "https://bringatrailer.com/listing/2004-porsche-911-turbo-cabriolet-203/",
+      "bat_title": "35k-Mile 2004 Porsche 911 Turbo Cabriolet X50 6-Speed",
+      "bat_mileage": "",
+      "bat_location": "Located in United States View all listings Notify me about new listings This 2004 Porsche 911 Turbo cabriolet was specified with the X50 Power Kit, an",
+      "bat_auction_status": "active",
+      "bat_end_date": "",
+      "bat_description": "Get this 35k-Mile 2004 Porsche 911 Turbo Cabriolet X50 6-Speed delivered with Bring a Trailer Shipping.Transparent pricingReal time trackingEasy and secureLearn more",
+      "bat_features": [
+        "Leather",
+        "Bose",
+        "Xenon",
+        "Led"
+      ],
+      "bat_photo_count": 20,
+      "bat_current_bid": "$39,996",
+      "bat_reserve_met": false,
+      "bat_no_reserve": true,
+      "bat_sold_price": "",
+      "source": "BringATrailer",
+      "first_scraped": "2025-09-19T04:09:40.256700",
+      "last_updated": "2025-09-19T04:09:40.407298",
+      "scrape_count": 1,
+      "age_years": 21,
+      "is_classic": true,
+      "is_vintage": false
     },
     {
       "vin": "WP0CB29925S675199",
@@ -5543,9 +5761,9 @@
       "bat_title": "35k-Mile 2005 Porsche 911 Turbo S Cabriolet 6-Speed",
       "bat_mileage": "500",
       "bat_location": "Located in United States View all listings Notify me about new listings This 2005 Porsche 911 Turbo S cabriolet was specified in GT Silver Metallic over a custom-tailored, Gr",
-      "bat_auction_status": "active",
-      "bat_end_date": "",
-      "bat_description": "Get this 35k-Mile 2005 Porsche 911 Turbo S Cabriolet 6-Speed delivered with Bring a Trailer Shipping.Transparent pricingReal time trackingEasy and secureLearn more",
+      "bat_auction_status": "sold",
+      "bat_end_date": "2025-09-18",
+      "bat_description": "Please address the errors below",
       "bat_features": [
         "Pccb",
         "Leather",
@@ -5554,18 +5772,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$67,996",
+      "bat_current_bid": "$37,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
-      "bat_sold_price": "",
+      "bat_sold_price": "$78,996",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:10:41.273107",
-      "last_updated": "2025-09-18T17:41:29.275029",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.230607",
+      "scrape_count": 4,
       "age_years": 20,
       "is_classic": true,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.275032"
+      "price_updated": "2025-09-19T04:35:22.230610"
     },
     {
       "vin": "WP0CB29978S776520",
@@ -5603,12 +5821,11 @@
       "bat_sold_price": "$33,520",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:16:51.699446",
-      "last_updated": "2025-09-18T17:41:29.277134",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228893",
+      "scrape_count": 4,
       "age_years": 17,
       "is_classic": true,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.277137"
+      "is_vintage": false
     },
     {
       "vin": "WP0CB29979S754969",
@@ -5637,17 +5854,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$19,250",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$81,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:14:50.667383",
-      "last_updated": "2025-09-18T17:41:29.278262",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228145",
+      "scrape_count": 4,
       "age_years": 16,
       "is_classic": true,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.228147"
     },
     {
       "vin": "WP0CB2A90AS754196",
@@ -5682,12 +5900,11 @@
       "bat_sold_price": "$55,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:09:51.761929",
-      "last_updated": "2025-09-18T17:41:29.272384",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229760",
+      "scrape_count": 4,
       "age_years": 15,
       "is_classic": false,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.272386"
+      "is_vintage": false
     },
     {
       "vin": "WP0CB2A90BS755155",
@@ -5718,17 +5935,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$9,000",
+      "bat_current_bid": "$9,119",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:18:56.082785",
-      "last_updated": "2025-09-18T17:41:29.275779",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.225783",
+      "scrape_count": 4,
       "age_years": 14,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.225786"
     },
     {
       "vin": "WP0CB2A92HS155472",
@@ -5759,18 +5977,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$2,200,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$98,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:32:49.414626",
-      "last_updated": "2025-09-18T17:41:29.273284",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229427",
+      "scrape_count": 4,
       "age_years": 8,
       "is_classic": false,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.273287"
+      "price_updated": "2025-09-19T04:35:22.229430"
     },
     {
       "vin": "WP0CB2A97KS136469",
@@ -5808,12 +6026,11 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:28:02.540503",
-      "last_updated": "2025-09-18T17:41:29.272824",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.231707",
+      "scrape_count": 4,
       "age_years": 6,
       "is_classic": false,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.272827"
+      "is_vintage": false
     },
     {
       "vin": "WP0CB2A98JS147723",
@@ -5847,18 +6064,60 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$112,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$114,500",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:35:14.061671",
-      "last_updated": "2025-09-18T17:41:29.275866",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227769",
+      "scrape_count": 4,
       "age_years": 7,
       "is_classic": false,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.275868"
+      "price_updated": "2025-09-19T04:35:22.227771"
+    },
+    {
+      "vin": "WP0CB2A9XBS754661",
+      "make": "PORSCHE",
+      "model": "911",
+      "model_year": "2011",
+      "manufacturer": "DR. ING. H.C.F. PORSCHE AG",
+      "body_class": "Coupe",
+      "doors": "2",
+      "fuel_type": "Gasoline",
+      "engine_cylinders": "6",
+      "displacement_l": "",
+      "drive_type": "AWD",
+      "bat_listing_id": "2011-porsche-911-carrera-4s-cabriolet-10",
+      "bat_url": "https://bringatrailer.com/listing/2011-porsche-911-carrera-4s-cabriolet-10/",
+      "bat_title": "40k-Mile 2011 Porsche 911 Carrera 4S Cabriolet",
+      "bat_mileage": "",
+      "bat_location": "Located in United States View all listings Notify me about new listings This 2011 Porsche 911 Carrera 4S cabriolet was purchased new by the seller and specified in Cream White with a Cocoa soft top over Cocoa leather upholstery. The car has spent most of its time registered in California and now has 40k miles. Power is provided by a 3.8-liter flat-six that drives all four wheels through a seven-speed PDK dual-clutch transaxle. Equipment includes 19″ Carrera S II wheels",
+      "bat_auction_status": "active",
+      "bat_end_date": "",
+      "bat_description": "Get this 40k-Mile 2011 Porsche 911 Carrera 4S Cabriolet delivered with Bring a Trailer Shipping.Transparent pricingReal time trackingEasy and secureLearn more",
+      "bat_features": [
+        "Sport Chrono",
+        "Pasm",
+        "Navigation",
+        "Leather",
+        "Bose",
+        "Xenon",
+        "Led"
+      ],
+      "bat_photo_count": 20,
+      "bat_current_bid": "$22,911",
+      "bat_reserve_met": false,
+      "bat_no_reserve": true,
+      "bat_sold_price": "",
+      "source": "BringATrailer",
+      "first_scraped": "2025-09-19T04:12:10.098718",
+      "last_updated": "2025-09-19T04:12:10.224513",
+      "scrape_count": 1,
+      "age_years": 14,
+      "is_classic": false,
+      "is_vintage": false
     },
     {
       "vin": "WP0CD29988S788640",
@@ -5896,8 +6155,8 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:08:55.883060",
-      "last_updated": "2025-09-18T17:41:29.274308",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.230922",
+      "scrape_count": 4,
       "age_years": 17,
       "is_classic": true,
       "is_vintage": false
@@ -5974,18 +6233,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,905,000",
+      "bat_current_bid": "$21,750",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$92,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:15:36.001587",
-      "last_updated": "2025-09-18T17:41:29.275952",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227175",
+      "scrape_count": 4,
       "age_years": 10,
       "is_classic": false,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.275955"
+      "price_updated": "2025-09-19T04:35:22.227178"
     },
     {
       "vin": "WP0CD2A91PS263154",
@@ -6023,12 +6282,11 @@
       "bat_sold_price": "$265,500",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:28:34.799798",
-      "last_updated": "2025-09-18T17:41:29.277714",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.231128",
+      "scrape_count": 4,
       "age_years": 2,
       "is_classic": false,
-      "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.277717"
+      "is_vintage": false
     },
     {
       "vin": "WP0CD2A94KS144751",
@@ -6060,18 +6318,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,400",
+      "bat_current_bid": "$22,750",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:39:02.892006",
-      "last_updated": "2025-09-18T17:41:29.274912",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.230965",
+      "scrape_count": 4,
       "age_years": 6,
       "is_classic": false,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.274914"
+      "price_updated": "2025-09-19T04:35:22.230967"
     },
     {
       "vin": "WP0CD2A96CS773591",
@@ -6104,17 +6362,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$230,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:39:46.332181",
-      "last_updated": "2025-09-18T17:41:29.272920",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.230174",
+      "scrape_count": 4,
       "age_years": 13,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.230176"
     },
     {
       "vin": "WP0CD2A98FS178391",
@@ -6145,17 +6404,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$20,000",
+      "bat_current_bid": "$35,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:35:33.492309",
-      "last_updated": "2025-09-18T17:41:29.274182",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.226546",
+      "scrape_count": 4,
       "age_years": 10,
       "is_classic": false,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.226549"
     },
     {
       "vin": "WP0CF2A92KS172428",
@@ -6186,18 +6446,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$19,250",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$528,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:27:06.775254",
-      "last_updated": "2025-09-18T17:41:29.278107",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227462",
+      "scrape_count": 4,
       "age_years": 6,
       "is_classic": false,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.278110"
+      "price_updated": "2025-09-19T04:35:22.227464"
     },
     {
       "vin": "WP0CF2A96KS172433",
@@ -6216,30 +6476,29 @@
       "bat_title": "1,200-Mile 2019 Porsche 911 Speedster Heritage Design",
       "bat_mileage": "1,200",
       "bat_location": "Located in United States View all listings Notify me about new listings This 2019 Porsche 911 Speedster is #1",
-      "bat_auction_status": "active",
-      "bat_end_date": "",
-      "bat_description": "Get this 1,200-Mile 2019 Porsche 911 Speedster Heritage Design delivered with Bring a Trailer Shipping.Transparent pricingReal time trackingEasy and secureLearn more",
+      "bat_auction_status": "sold",
+      "bat_end_date": "2025-09-18",
+      "bat_description": "Please address the errors below",
       "bat_features": [
         "Pasm",
         "Pccb",
-        "Sport Exhaust",
         "Leather",
         "Bose",
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$425,000",
+      "bat_current_bid": "$37,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
-      "bat_sold_price": "",
+      "bat_sold_price": "$440,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:37:10.142319",
-      "last_updated": "2025-09-18T17:41:29.274105",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.230263",
+      "scrape_count": 4,
       "age_years": 6,
       "is_classic": false,
       "is_vintage": false,
-      "price_updated": "2025-09-18T17:41:29.274108"
+      "price_updated": "2025-09-19T04:35:22.230265"
     },
     {
       "vin": "WP0EB0912GS171942",
@@ -6273,8 +6532,8 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:38:24.568186",
-      "last_updated": "2025-09-18T17:41:29.276581",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227262",
+      "scrape_count": 4,
       "age_years": 39,
       "is_classic": true,
       "is_vintage": true
@@ -6310,8 +6569,8 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:12:15.869065",
-      "last_updated": "2025-09-18T17:41:29.276255",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.230805",
+      "scrape_count": 4,
       "age_years": 36,
       "is_classic": true,
       "is_vintage": true
@@ -6342,17 +6601,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$42,000",
+      "bat_current_bid": "$43,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:38:32.846954",
-      "last_updated": "2025-09-18T17:41:29.275075",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.231386",
+      "scrape_count": 4,
       "age_years": 39,
       "is_classic": true,
-      "is_vintage": true
+      "is_vintage": true,
+      "price_updated": "2025-09-19T04:35:22.231389"
     },
     {
       "vin": "WP0EB0913HS171031",
@@ -6371,27 +6631,27 @@
       "bat_title": "1987 Porsche 911 Carrera Cabriolet G50",
       "bat_mileage": "3",
       "bat_location": "Located in United States View all listings Notify me about new listings This 1987 Porsche 911 Carrera cabriolet has resided with two registered owners since new, an",
-      "bat_auction_status": "active",
-      "bat_end_date": "",
-      "bat_description": "Get this 1987 Porsche 911 Carrera Cabriolet G50 delivered with Bring a Trailer Shipping.Transparent pricingReal time trackingEasy and secureLearn more",
+      "bat_auction_status": "sold",
+      "bat_end_date": "2025-09-18",
+      "bat_description": "Please address the errors below",
       "bat_features": [
         "Air Conditioning",
         "Leather",
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$37,500",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
-      "bat_sold_price": "",
+      "bat_sold_price": "$50,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:20:53.607715",
-      "last_updated": "2025-09-18T17:41:29.276398",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.225258",
+      "scrape_count": 4,
       "age_years": 38,
       "is_classic": true,
       "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.276401"
+      "price_updated": "2025-09-19T04:35:22.225261"
     },
     {
       "vin": "WP0EB0914ES160745",
@@ -6419,17 +6679,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$2,200,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$42,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:24:46.296238",
-      "last_updated": "2025-09-18T17:41:29.273144",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227997",
+      "scrape_count": 4,
       "age_years": 41,
       "is_classic": true,
-      "is_vintage": true
+      "is_vintage": true,
+      "price_updated": "2025-09-19T04:35:22.228000"
     },
     {
       "vin": "WP0EB0915KS160250",
@@ -6463,12 +6724,11 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:36:48.627101",
-      "last_updated": "2025-09-18T17:41:29.276482",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.230440",
+      "scrape_count": 4,
       "age_years": 36,
       "is_classic": true,
-      "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.276499"
+      "is_vintage": true
     },
     {
       "vin": "WP0EB0916KS170852",
@@ -6496,18 +6756,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$22,750",
+      "bat_current_bid": "$47,555",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$46,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:19:29.084119",
-      "last_updated": "2025-09-18T17:41:29.275121",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.226469",
+      "scrape_count": 4,
       "age_years": 36,
       "is_classic": true,
       "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.275124"
+      "price_updated": "2025-09-19T04:35:22.226471"
     },
     {
       "vin": "WP0EB0917HS170531",
@@ -6541,12 +6801,11 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:36:12.913882",
-      "last_updated": "2025-09-18T17:41:29.276350",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.225510",
+      "scrape_count": 4,
       "age_years": 38,
       "is_classic": true,
-      "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.276352"
+      "is_vintage": true
     },
     {
       "vin": "WP0EB0917JS160149",
@@ -6580,12 +6839,11 @@
       "bat_sold_price": "$92,500",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:08:09.762567",
-      "last_updated": "2025-09-18T17:41:29.277632",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229609",
+      "scrape_count": 4,
       "age_years": 37,
       "is_classic": true,
-      "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.277635"
+      "is_vintage": true
     },
     {
       "vin": "WP0EB0919GS171324",
@@ -6618,12 +6876,11 @@
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:24:35.377357",
-      "last_updated": "2025-09-18T17:41:29.275736",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.227030",
+      "scrape_count": 4,
       "age_years": 39,
       "is_classic": true,
-      "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.275738"
+      "is_vintage": true
     },
     {
       "vin": "WP0JB0932GS050490",
@@ -6652,17 +6909,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$37,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:28:12.135944",
-      "last_updated": "2025-09-18T17:41:29.272507",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.231662",
+      "scrape_count": 4,
       "age_years": 39,
       "is_classic": true,
-      "is_vintage": true
+      "is_vintage": true,
+      "price_updated": "2025-09-19T04:35:22.231665"
     },
     {
       "vin": "WP0JB0937HS050986",
@@ -6691,18 +6949,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$22,750",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$239,930",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:39:36.339327",
-      "last_updated": "2025-09-18T17:41:29.274795",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228340",
+      "scrape_count": 4,
       "age_years": 38,
       "is_classic": true,
       "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.274797"
+      "price_updated": "2025-09-19T04:35:22.228344"
     },
     {
       "vin": "WP0JB0938HS050074",
@@ -6731,18 +6989,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$425,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$225,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:31:10.775381",
-      "last_updated": "2025-09-18T17:41:29.273094",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229913",
+      "scrape_count": 4,
       "age_years": 38,
       "is_classic": true,
       "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.273097"
+      "price_updated": "2025-09-19T04:35:22.229916"
     },
     {
       "vin": "WP0JB0939GS050938",
@@ -6777,12 +7035,11 @@
       "bat_sold_price": "$170,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:30:11.771569",
-      "last_updated": "2025-09-18T17:41:29.273580",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229298",
+      "scrape_count": 4,
       "age_years": 39,
       "is_classic": true,
-      "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.273583"
+      "is_vintage": true
     },
     {
       "vin": "WP0ZZZ93ZDS000965",
@@ -6846,17 +7103,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$1,050,000",
+      "bat_current_bid": "$36,500",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$102,997",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:26:21.599517",
-      "last_updated": "2025-09-18T17:41:29.271649",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.229865",
+      "scrape_count": 4,
       "age_years": 18,
       "is_classic": true,
-      "is_vintage": false
+      "is_vintage": false,
+      "price_updated": "2025-09-19T04:35:22.229868"
     },
     {
       "vin": "WP0ZZZ99ZTS390102",
@@ -6884,18 +7142,18 @@
         "Led"
       ],
       "bat_photo_count": 20,
-      "bat_current_bid": "$425,000",
+      "bat_current_bid": "$37,000",
       "bat_reserve_met": false,
       "bat_no_reserve": true,
       "bat_sold_price": "$407,000",
       "source": "BringATrailer",
       "first_scraped": "2025-09-18T02:33:50.958689",
-      "last_updated": "2025-09-18T17:41:29.277022",
-      "scrape_count": 3,
+      "last_updated": "2025-09-19T04:35:22.228590",
+      "scrape_count": 4,
       "age_years": 30,
       "is_classic": true,
       "is_vintage": true,
-      "price_updated": "2025-09-18T17:41:29.277025"
+      "price_updated": "2025-09-19T04:35:22.228592"
     }
   ]
 }
