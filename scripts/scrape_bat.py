@@ -68,100 +68,106 @@ class BaTScraper:
         elapsed = datetime.now() - self.start_time
         return elapsed < self.max_runtime
     
-    def extract_auction_date_from_page_preview(self, page_html: str) -> Optional[datetime]:
-        """Extract auction end dates from the auction results page HTML (not individual listing pages)."""
-        soup = BeautifulSoup(page_html, 'html.parser')
+    def parse_relative_date(self, text: str) -> Optional[datetime]:
+        """Parse relative dates like 'ended 3 days ago' or 'sold 2 weeks ago'."""
+        now = datetime.now()
+        text_lower = text.lower().strip()
         
-        # Common patterns for auction dates on results pages
-        date_patterns = [
-            # Look for elements containing dates
-            r'(\w+\s+\d{1,2},\s+\d{4})',  # "September 18, 2024"
-            r'(\w{3}\s+\d{1,2},\s+\d{4})',  # "Sep 18, 2024"
-            r'(\d{1,2}/\d{1,2}/\d{4})',     # "09/18/2024"
-            r'(\d{4}-\d{2}-\d{2})',         # "2024-09-18"
+        # Pattern for "X days ago", "X weeks ago", etc.
+        relative_patterns = [
+            r'(\d+)\s*days?\s*ago',
+            r'(\d+)\s*weeks?\s*ago',
+            r'(\d+)\s*months?\s*ago',
+            r'yesterday',
+            r'today'
         ]
         
-        # Get all text from the page
-        page_text = soup.get_text()
+        for pattern in relative_patterns:
+            match = re.search(pattern, text_lower)
+            if match:
+                if 'yesterday' in text_lower:
+                    return now - timedelta(days=1)
+                elif 'today' in text_lower:
+                    return now
+                elif 'days' in text_lower:
+                    days = int(match.group(1))
+                    return now - timedelta(days=days)
+                elif 'weeks' in text_lower:
+                    weeks = int(match.group(1))
+                    return now - timedelta(weeks=weeks)
+                elif 'months' in text_lower:
+                    months = int(match.group(1))
+                    return now - timedelta(days=months*30)  # Approximate
         
-        dates_found = []
-        for pattern in date_patterns:
-            matches = re.findall(pattern, page_text, re.IGNORECASE)
-            for match in matches:
-                try:
-                    # Try different date formats
-                    date_formats = [
-                        '%B %d, %Y',   # September 18, 2024
-                        '%b %d, %Y',   # Sep 18, 2024
-                        '%m/%d/%Y',    # 09/18/2024
-                        '%Y-%m-%d'     # 2024-09-18
-                    ]
-                    
-                    for fmt in date_formats:
-                        try:
-                            date_obj = datetime.strptime(match.strip(), fmt)
-                            # Only consider dates that make sense (not in future, not too old)
-                            if date_obj <= datetime.now() and date_obj >= datetime(2020, 1, 1):
-                                dates_found.append(date_obj)
-                                break
-                        except ValueError:
-                            continue
-                except Exception:
-                    continue
-        
-        # Return the most recent date found (should be representative of the page)
-        return max(dates_found) if dates_found else None
+        return None
     
     def assess_page_recency_by_dates(self, driver) -> dict:
         """Assess how recent the auction end dates are on the current page."""
         try:
-            page_html = driver.page_source
-            
-            # Look for date information in various elements
-            date_elements = driver.find_elements(By.XPATH, "//*[contains(text(), '2024') or contains(text(), '2023') or contains(text(), '2022') or contains(text(), '2021')]")
+            # Get all text elements that might contain dates
+            all_text_elements = driver.find_elements(By.XPATH, "//*[text()]")
             
             dates_found = []
             current_year = datetime.now().year
+            now = datetime.now()
             
-            for element in date_elements[:20]:  # Limit to first 20 elements to avoid processing too much
+            # Comprehensive date patterns for BaT
+            date_patterns = [
+                # Absolute dates
+                (r'(\w+\s+\d{1,2},\s+\d{4})', ['%B %d, %Y', '%b %d, %Y']),  # "September 18, 2024"
+                (r'(\d{1,2}/\d{1,2}/\d{4})', ['%m/%d/%Y']),                   # "09/18/2024" 
+                (r'(\d{4}-\d{2}-\d{2})', ['%Y-%m-%d']),                       # "2024-09-18"
+                
+                # Relative dates
+                (r'ended\s+(\d+)\s*days?\s*ago', None),                       # "ended 5 days ago"
+                (r'sold\s+(\d+)\s*days?\s*ago', None),                        # "sold 3 days ago"
+                (r'(\d+)\s*days?\s*ago', None),                               # "2 days ago"
+                (r'(\d+)\s*weeks?\s*ago', None),                              # "3 weeks ago"
+                (r'(\d+)\s*months?\s*ago', None),                             # "2 months ago"
+                (r'yesterday|today', None),                                    # "yesterday", "today"
+            ]
+            
+            for element in all_text_elements[:50]:  # Limit to avoid too much processing
                 try:
                     element_text = element.text.strip()
-                    if not element_text:
+                    if not element_text or len(element_text) > 200:  # Skip very long text
                         continue
                     
-                    # Look for date patterns in the element text
-                    date_patterns = [
-                        r'(\w+\s+\d{1,2},\s+\d{4})',  # "September 18, 2024"
-                        r'(\w{3}\s+\d{1,2},\s+\d{4})',  # "Sep 18, 2024" 
-                        r'(\d{1,2}/\d{1,2}/\d{4})',     # "09/18/2024"
-                    ]
-                    
-                    for pattern in date_patterns:
-                        matches = re.findall(pattern, element_text, re.IGNORECASE)
-                        for match in matches:
-                            try:
-                                date_formats = ['%B %d, %Y', '%b %d, %Y', '%m/%d/%Y']
-                                for fmt in date_formats:
+                    # Try absolute date patterns
+                    for pattern, formats in date_patterns:
+                        if formats is None:  # Relative date pattern
+                            relative_date = self.parse_relative_date(element_text)
+                            if relative_date:
+                                dates_found.append(relative_date)
+                                self.logger.debug(f"Found relative date: '{element_text}' -> {relative_date.strftime('%Y-%m-%d')}")
+                        else:  # Absolute date pattern
+                            matches = re.findall(pattern, element_text, re.IGNORECASE)
+                            for match in matches:
+                                for fmt in formats:
                                     try:
                                         date_obj = datetime.strptime(match.strip(), fmt)
-                                        if date_obj <= datetime.now() and date_obj >= datetime(2022, 1, 1):
+                                        # Only accept reasonable dates (within last 5 years, not in future)
+                                        if datetime(2020, 1, 1) <= date_obj <= now:
                                             dates_found.append(date_obj)
+                                            self.logger.debug(f"Found absolute date: '{match}' -> {date_obj.strftime('%Y-%m-%d')}")
                                             break
                                     except ValueError:
                                         continue
-                            except:
-                                continue
-                                
-                except Exception:
+                                        
+                except Exception as e:
+                    self.logger.debug(f"Error processing element: {e}")
                     continue
             
-            if not dates_found:
+            # Remove duplicates and sort
+            unique_dates = list(set(dates_found))
+            unique_dates.sort(reverse=True)  # Most recent first
+            
+            if not unique_dates:
                 self.logger.info("No auction dates found on page - assuming mixed content")
                 return {'is_mostly_old': False, 'recent_count': 1, 'old_count': 0, 'avg_days_ago': 100}
             
             # Calculate how old these auctions are
-            now = datetime.now()
-            days_ago_list = [(now - date).days for date in dates_found]
+            days_ago_list = [(now - date).days for date in unique_dates]
             avg_days_ago = sum(days_ago_list) / len(days_ago_list)
             
             # Count recent vs old based on our 1-year cutoff (365 days)
@@ -171,16 +177,17 @@ class BaTScraper:
             # Consider page mostly old if more than 70% of auctions are older than 1 year
             is_mostly_old = (old_count / len(days_ago_list)) > 0.7 if len(days_ago_list) > 0 else False
             
-            self.logger.info(f"Page date analysis: {recent_count} recent auctions, {old_count} old auctions, avg {avg_days_ago:.0f} days ago - {'MOSTLY OLD' if is_mostly_old else 'RECENT/MIXED'}")
+            self.logger.info(f"Page date analysis: {recent_count} recent auctions, {old_count} old auctions, avg {avg_days_ago:.0f} days ago ({len(unique_dates)} dates found) - {'MOSTLY OLD' if is_mostly_old else 'RECENT/MIXED'}")
             
             return {
                 'is_mostly_old': is_mostly_old,
                 'recent_count': recent_count,
                 'old_count': old_count,
-                'total_dates': len(dates_found),
+                'total_dates': len(unique_dates),
                 'avg_days_ago': avg_days_ago,
                 'oldest_days': max(days_ago_list) if days_ago_list else 0,
-                'newest_days': min(days_ago_list) if days_ago_list else 0
+                'newest_days': min(days_ago_list) if days_ago_list else 0,
+                'dates_sample': [d.strftime('%Y-%m-%d') for d in unique_dates[:5]]  # First 5 for logging
             }
             
         except Exception as e:
@@ -189,42 +196,51 @@ class BaTScraper:
     
     def extract_auction_end_date(self, page_text: str, listing_url: str) -> Optional[datetime]:
         """Extract auction end date from individual listing page text."""
-        # Common date patterns on BaT
+        # Common date patterns on BaT individual listing pages
         date_patterns = [
-            # "Ended September 16, 2024"
-            r'ended\s+(\w+\s+\d{1,2},\s+\d{4})',
-            # "Auction ended on September 16, 2024"
-            r'auction ended on\s+(\w+\s+\d{1,2},\s+\d{4})',
-            # "September 16, 2024" in various contexts
-            r'(\w+\s+\d{1,2},\s+\d{4})',
-            # "Sep 16, 2024"
-            r'(\w{3}\s+\d{1,2},\s+\d{4})',
-            # "2024-09-16" format
-            r'(\d{4}-\d{2}-\d{2})'
+            # Past tense - for sold/ended auctions
+            (r'ended\s+(\w+\s+\d{1,2},\s+\d{4})', '%B %d, %Y'),              # "ended September 16, 2024"
+            (r'auction ended on\s+(\w+\s+\d{1,2},\s+\d{4})', '%B %d, %Y'),   # "auction ended on September 16, 2024"
+            (r'sold\s+(\w+\s+\d{1,2},\s+\d{4})', '%B %d, %Y'),               # "sold September 16, 2024"
+            
+            # Future tense - for active auctions
+            (r'ends on\s+(\w+,\s+\w+\s+\d{1,2})', '%A, %B %d'),              # "ends on Thursday, July 17" (current year assumed)
+            (r'ends\s+(\w+\s+\d{1,2},\s+\d{4})', '%B %d, %Y'),               # "ends September 16, 2024"
+            (r'(\w+\s+\d{1,2},\s+\d{4})\s+at\s+\d', '%B %d, %Y'),            # "July 17, 2025 at 2:47PM"
+            
+            # Short formats
+            (r'(\w{3}\s+\d{1,2},\s+\d{4})', '%b %d, %Y'),                    # "Sep 16, 2024"
+            (r'(\d{4}-\d{2}-\d{2})', '%Y-%m-%d'),                            # "2024-09-16"
+            
+            # Relative dates
+            (r'ended\s+(\d+)\s*days?\s*ago', None),                           # "ended 5 days ago"
+            (r'sold\s+(\d+)\s*days?\s*ago', None),                            # "sold 3 days ago"
         ]
         
         text_lower = page_text.lower()
         
-        for pattern in date_patterns:
+        for pattern, date_format in date_patterns:
             matches = re.findall(pattern, text_lower, re.IGNORECASE)
             for match in matches:
                 try:
-                    # Try different date formats
-                    date_formats = [
-                        '%B %d, %Y',   # September 16, 2024
-                        '%b %d, %Y',   # Sep 16, 2024
-                        '%Y-%m-%d'     # 2024-09-16
-                    ]
-                    
-                    for fmt in date_formats:
-                        try:
-                            date_obj = datetime.strptime(match.strip(), fmt)
-                            # Only return dates that make sense (not in future, not too old)
-                            if date_obj <= datetime.now() and date_obj >= datetime(2020, 1, 1):
-                                return date_obj
-                        except ValueError:
-                            continue
-                except Exception:
+                    if date_format is None:  # Relative date
+                        relative_date = self.parse_relative_date(f"ended {match} days ago")
+                        if relative_date:
+                            return relative_date
+                    else:  # Absolute date
+                        if date_format == '%A, %B %d':  # Add current year for partial dates
+                            match = f"{match} {datetime.now().year}"
+                            date_format = '%A, %B %d %Y'
+                        
+                        date_obj = datetime.strptime(match.strip(), date_format)
+                        # Only return dates that make sense (not too far in future, not too old)
+                        if datetime(2020, 1, 1) <= date_obj <= datetime.now() + timedelta(days=365):
+                            return date_obj
+                except ValueError as e:
+                    self.logger.debug(f"Date parse error for '{match}' with format '{date_format}': {e}")
+                    continue
+                except Exception as e:
+                    self.logger.debug(f"Unexpected error parsing date '{match}': {e}")
                     continue
         
         return None
@@ -632,6 +648,7 @@ class BaTScraper:
         
         # Current bid patterns
         bid_patterns = [
+            r'usd\s*\$[\d,]+',              # "USD $149,582"
             r'bid:\s*usd\s*\$[\d,]+',
             r'current bid[:\s]*\$[\d,]+',
             r'\$[\d,]+\s*current bid',
@@ -675,7 +692,26 @@ class BaTScraper:
         """Determine if this is an active auction, sold auction, or ended without sale."""
         text_lower = page_text.lower()
         
-        # Check for sold indicators first (most definitive)
+        # Check for active indicators first (most relevant for current listings)
+        active_indicators = [
+            'ends in',                      # "Ends in" 
+            'time left:',
+            'days left',
+            'hours left', 
+            'minutes left',
+            'bidding ends',
+            'current bid:',
+            'bid: usd $',
+            'checking for last second bids',
+            'place bid',
+            'register to bid'
+        ]
+        
+        for indicator in active_indicators:
+            if indicator in text_lower:
+                return 'active'
+        
+        # Check for sold indicators
         sold_indicators = [
             'sold for $',
             'winning bid:',
@@ -689,23 +725,6 @@ class BaTScraper:
         for indicator in sold_indicators:
             if indicator in text_lower:
                 return 'sold'
-        
-        # Check for active auction indicators
-        active_indicators = [
-            'current bid:',
-            'bid: usd $',
-            'time left:',
-            'days left',
-            'hours left',
-            'minutes left',
-            'bidding ends',
-            'reserve not met',
-            'reserve met'
-        ]
-        
-        for indicator in active_indicators:
-            if indicator in text_lower:
-                return 'active'
         
         # Check for ended without sale
         ended_indicators = [
@@ -1013,7 +1032,7 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
             'skipped_old_listings': 0,
             'cutoff_date': scraper.cutoff_date.strftime('%Y-%m-%d'),
             'source': 'BringATrailer',
-            'target': 'Porsche 911 (1981+) - Date-Based Smart Stopping'
+            'target': 'Porsche 911 (1981+) - Enhanced Date Detection'
         },
         'listings': []
     }
@@ -1077,7 +1096,7 @@ def main():
     logger = setup_logging()
     
     try:
-        logger.info(f"Starting date-aware BaT scrape with {args.max_runtime} minute limit")
+        logger.info(f"Starting enhanced date-aware BaT scrape with {args.max_runtime} minute limit")
         
         # Scrape listings
         results = scrape_bat_listings(args.max_runtime)
@@ -1087,7 +1106,7 @@ def main():
         
         # Print summary
         metadata = results['metadata']
-        print(f"✅ BaT date-aware scraping completed")
+        print(f"✅ BaT enhanced date-aware scraping completed")
         print(f"📁 Results saved to {args.output}")
         print(f"⏱️ Runtime: {metadata['runtime_minutes']} minutes")
         print(f"📅 Cutoff date: {metadata['cutoff_date']} (auction end date)")
