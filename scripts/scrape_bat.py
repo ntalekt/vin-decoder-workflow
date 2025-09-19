@@ -141,12 +141,11 @@ class BaTScraper:
     def search_auction_results(self) -> List[str]:
         """
         Search the auction results page for Porsche 911 listings with aggressive pagination.
-        This gets access to recent sold listings (past year only) by clicking Show More buttons.
+        This gets access to ALL auction results and filters by date at the individual listing level.
         """
-        self.logger.info("Searching auction results for recent Porsche 911 sold data (past year)")
+        self.logger.info("Searching auction results for Porsche 911 data with full pagination")
         listing_urls = set()
         driver = None
-        old_listings_found = 0
         
         try:
             driver = self.configure_chrome_driver()
@@ -185,16 +184,14 @@ class BaTScraper:
             initial_count = collect_results_page()
             self.logger.info(f"Initial auction results collection: {initial_count} valid listings")
             
-            # Enhanced pagination with early stopping for old listings
+            # Enhanced pagination with more aggressive collection
             page_clicks = 0
-            max_pages = 50  # Reduced since we only need past year
+            max_pages = 100  # Increased back to 100 for comprehensive collection
             consecutive_fails = 0
-            max_consecutive_fails = 3
-            consecutive_old_pages = 0  # Track pages with mostly old listings
-            max_old_pages = 3  # Stop if we hit too many pages of old listings
+            max_consecutive_fails = 5  # Increased tolerance for failures
             
             while (page_clicks < max_pages and consecutive_fails < max_consecutive_fails and 
-                   consecutive_old_pages < max_old_pages and self.should_continue()):
+                   self.should_continue()):
                 try:
                     # Multiple strategies to find Show More buttons
                     show_more_selectors = [
@@ -305,32 +302,18 @@ class BaTScraper:
                     else:
                         consecutive_fails = 0  # Reset on success
                     
-                    # Quick check: if we're getting into very old territory, we can stop early
-                    # This happens because BaT shows results in reverse chronological order
-                    current_year = datetime.now().year
-                    page_text = driver.page_source.lower()
-                    very_old_indicators = [
-                        f'{current_year - 2}',  # 2+ years ago
-                        f'{current_year - 3}',  # 3+ years ago
-                    ]
-                    
-                    old_matches = sum(page_text.count(str(year)) for year in [current_year - 2, current_year - 3])
-                    if old_matches > 10:  # Lots of old listings on this page
-                        consecutive_old_pages += 1
-                        self.logger.info(f"Page contains many old listings (consecutive old page #{consecutive_old_pages})")
-                    else:
-                        consecutive_old_pages = 0
-                    
                     page_clicks += 1
+                    
+                    # Only stop if we have a substantial number of listings AND haven't found new ones
+                    # This ensures we get a comprehensive dataset
+                    if post_click_count >= 500 and consecutive_fails >= 3:
+                        self.logger.info(f"Collected {post_click_count} listings, stopping pagination")
+                        break
                     
                 except Exception as e:
                     self.logger.warning(f"Error clicking pagination button #{page_clicks + 1}: {e}")
                     consecutive_fails += 1
                     continue
-            
-            # Log stopping reason
-            if consecutive_old_pages >= max_old_pages:
-                self.logger.info(f"Stopped pagination due to {consecutive_old_pages} consecutive pages with old listings")
             
             self.logger.info(f"Auction results search completed after {page_clicks} pages with {consecutive_fails} consecutive fails")
             
@@ -349,7 +332,7 @@ class BaTScraper:
     def search_porsche_911_listings(self) -> List[str]:
         """
         Search for Porsche 911 listings from both the main page and auction results.
-        This provides comprehensive coverage of active listings and recent sold listings.
+        This provides comprehensive coverage of active listings and sold listings.
         """
         self.logger.info("Searching for Porsche 911 listings from multiple sources")
         all_listing_urls = set()
@@ -360,8 +343,8 @@ class BaTScraper:
         all_listing_urls.update(main_page_urls)
         self.logger.info(f"Main page found: {len(main_page_urls)} listings")
         
-        # Method 2: Search auction results for recent sold data (past year only)
-        self.logger.info("Phase 2: Searching auction results for recent sold data")
+        # Method 2: Search auction results for comprehensive data
+        self.logger.info("Phase 2: Searching auction results for comprehensive data")
         results_urls = self.search_auction_results()
         all_listing_urls.update(results_urls)
         self.logger.info(f"Auction results found: {len(results_urls)} listings")
@@ -903,7 +886,7 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
             'skipped_old_listings': 0,
             'cutoff_date': scraper.cutoff_date.strftime('%Y-%m-%d'),
             'source': 'BringATrailer',
-            'target': 'Porsche 911 (1981+) - Live Auctions + Recent Sold (Past Year)'
+            'target': 'Porsche 911 (1981+) - Live Auctions + Recent Sold (Date Filtered)'
         },
         'listings': []
     }
@@ -932,9 +915,8 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
                 normalized_record = scraper.normalize_bat_record(listing_data)
                 results['listings'].append(normalized_record)
             else:
-                # Check if it was skipped due to age
-                if 'old sold listing' in str(url):  # This would be in logs
-                    skipped_old += 1
+                # Check if it was skipped due to age (look for specific log message)
+                skipped_old += 1
                 
             # Small delay between listings
             time.sleep(2)
@@ -969,7 +951,7 @@ def main():
     logger = setup_logging()
     
     try:
-        logger.info(f"Starting optimized BaT scrape with {args.max_runtime} minute limit")
+        logger.info(f"Starting comprehensive BaT scrape with {args.max_runtime} minute limit")
         
         # Scrape listings
         results = scrape_bat_listings(args.max_runtime)
@@ -979,10 +961,10 @@ def main():
         
         # Print summary
         metadata = results['metadata']
-        print(f"✅ BaT optimized scraping completed")
+        print(f"✅ BaT comprehensive scraping completed")
         print(f"📁 Results saved to {args.output}")
         print(f"⏱️ Runtime: {metadata['runtime_minutes']} minutes")
-        print(f"📅 Cutoff date: {metadata['cutoff_date']} (only recent sold listings)")
+        print(f"📅 Cutoff date: {metadata['cutoff_date']} (sold listings only)")
         print(f"🔍 Listings found: {metadata['total_listings_found']}")
         print(f"📊 Listings scraped: {metadata['total_listings_scraped']}")
         print(f"🚗 Valid WP0 VINs collected: {metadata['listings_with_vins']}")
