@@ -798,8 +798,128 @@ class BaTScraper:
         # Default to unknown if we can't determine
         return 'unknown'
 
+    def extract_clean_description(self, soup: BeautifulSoup) -> str:
+        """Extract clean description, avoiding error messages and navigation text."""
+        description = ""
+        
+        # Try multiple approaches to get clean description
+        approaches = [
+            # Approach 1: Look for specific BaT description containers
+            {
+                'selectors': ['div[class*="listing-description"]', 'div[class*="auction-description"]', 'div[class*="description"]'],
+                'min_length': 50
+            },
+            # Approach 2: Look for paragraphs with meaningful content
+            {
+                'selectors': ['div.listing-content p', 'div.auction-content p', 'main p'],
+                'min_length': 30
+            },
+            # Approach 3: Look for text blocks that contain car-specific keywords
+            {
+                'selectors': ['div', 'section', 'article'],
+                'min_length': 100,
+                'must_contain': ['powered by', 'engine', 'transmission', 'miles', 'purchased', 'equipped', 'features']
+            }
+        ]
+        
+        # Skip patterns that indicate error messages or navigation
+        skip_patterns = [
+            r'please address the errors below',
+            r'view all listings',
+            r'notify me about new listings', 
+            r'get this.*delivered with bring a trailer',
+            r'transparent pricing',
+            r'real time tracking',
+            r'easy and secure',
+            r'learn more',
+            r'sign in',
+            r'register',
+            r'search',
+            r'filter',
+            r'sort by',
+            r'show more',
+            r'load more',
+        ]
+        
+        for approach in approaches:
+            for selector in approach['selectors']:
+                try:
+                    elements = soup.select(selector)
+                    for element in elements:
+                        text = element.get_text(strip=True)
+                        
+                        if len(text) < approach['min_length']:
+                            continue
+                            
+                        # Skip if it matches error/navigation patterns
+                        text_lower = text.lower()
+                        if any(re.search(pattern, text_lower) for pattern in skip_patterns):
+                            continue
+                            
+                        # For approach 3, check if it contains car-specific keywords
+                        if 'must_contain' in approach:
+                            if not any(keyword in text_lower for keyword in approach['must_contain']):
+                                continue
+                        
+                        # Take the first valid description found
+                        description = text[:1000]  # Limit length
+                        break
+                        
+                    if description:
+                        break
+                        
+                if description:
+                    break
+        
+        return description
+
+    def extract_clean_location(self, soup: BeautifulSoup, page_text: str) -> str:
+        """Extract clean location, avoiding description text."""
+        location = ""
+        
+        # Location-specific patterns in text
+        location_patterns = [
+            r'located in ([^,\n.]+(?:,\s*[A-Z]{2})?)',  # "Located in City, ST" 
+            r'seller[:\s]+[^,\n]+[,\s]+([^,\n.]+(?:,\s*[A-Z]{2})?)',  # "Seller: Name, Location"
+            r'(?:from|in)\s+([A-Z][a-z]+(?:,\s*[A-Z]{2})?)',  # "from/in Location"
+        ]
+        
+        # Try to extract location from page text using patterns
+        for pattern in location_patterns:
+            match = re.search(pattern, page_text, re.IGNORECASE)
+            if match:
+                potential_location = match.group(1).strip()
+                
+                # Validate it looks like a location (not a long description)
+                if (len(potential_location) < 100 and 
+                    not any(word in potential_location.lower() for word in ['powered by', 'engine', 'transmission', 'miles', 'purchased'])):
+                    location = potential_location
+                    break
+        
+        # If no location found, try specific selectors
+        if not location:
+            location_selectors = [
+                'span[class*="location"]',
+                'div[class*="location"]',
+                'span[class*="seller"]',
+                'div[class*="seller"]'
+            ]
+            
+            for selector in location_selectors:
+                try:
+                    element = soup.select_one(selector)
+                    if element:
+                        text = element.get_text(strip=True)
+                        if len(text) < 100 and text:  # Reasonable location length
+                            location = text
+                            break
+                except:
+                    continue
+        
+        return location
+
     def scrape_listing_details(self, listing_url: str) -> Optional[Dict[str, Any]]:
-        """Scrape detailed information from a BaT listing."""
+        """Scrape detailed information from a BaT listing with improved description/location extraction."""
         if not self.should_continue():
             return None
 
@@ -915,17 +1035,8 @@ class BaTScraper:
                     listing_data['mileage'] = match.group(1)
                     break
 
-            # Location
-            location_patterns = [
-                r'(?:location|located)[:\s]+([^,\n]+(?:,\s*[A-Z]{2})?)',
-                r'seller[:\s]+[^,\n]+[,\s]+([^,\n]+(?:,\s*[A-Z]{2})?)',
-            ]
-
-            for pattern in location_patterns:
-                match = re.search(pattern, page_text, re.IGNORECASE)
-                if match:
-                    listing_data['location'] = match.group(1).strip()
-                    break
+            # FIXED: Clean location extraction
+            listing_data['location'] = self.extract_clean_location(soup, page_text)
 
             # Specifications
             specs_text = page_text.lower()
@@ -968,22 +1079,8 @@ class BaTScraper:
 
             listing_data['features'] = features
 
-            # Description
-            description_selectors = [
-                'div[class*="description"]',
-                'div[class*="summary"]',
-                'div[class*="content"]',
-                '.listing-description',
-                '.auction-description'
-            ]
-
-            for selector in description_selectors:
-                description_elem = soup.select_one(selector)
-                if description_elem:
-                    description = description_elem.get_text(strip=True)[:1000]
-                    if len(description) > 20:
-                        listing_data['description'] = description
-                        break
+            # FIXED: Clean description extraction
+            listing_data['description'] = self.extract_clean_description(soup)
 
             # Photos
             img_tags = soup.find_all('img')
@@ -1092,7 +1189,7 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
             'skipped_old_listings': 0,
             'cutoff_date': scraper.cutoff_date.strftime('%Y-%m-%d'),
             'source': 'BringATrailer',
-            'target': 'Porsche 911 (1981+) - Last 3 Months Data'
+            'target': 'Porsche 911 (1981+) - Last 3 Months Data - Fixed Description/Location'
         },
         'listings': []
     }
