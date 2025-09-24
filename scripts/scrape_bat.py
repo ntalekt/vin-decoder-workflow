@@ -32,10 +32,11 @@ from utils import setup_logging, save_json_file, create_timestamp, validate_vin
 class BaTScraper:
     """Bring a Trailer scraper for Porsche 911 listings."""
 
-    def __init__(self, max_runtime_minutes: int = 45):
+    def __init__(self, max_runtime_minutes: int = 45, max_listings: Optional[int] = None):
         self.logger = setup_logging()
         self.base_url = "https://bringatrailer.com"
         self.max_runtime = timedelta(minutes=max_runtime_minutes)
+        self.max_listings = max_listings
         self.start_time = datetime.now()
         self.session = requests.Session()
         self.session.headers.update({
@@ -46,6 +47,9 @@ class BaTScraper:
         # Set cutoff date to 3 months ago from today (90 days)
         self.cutoff_date = datetime.now() - timedelta(days=90)
         self.logger.info(f"Only collecting listings newer than: {self.cutoff_date.strftime('%Y-%m-%d')} (last 3 months)")
+        
+        if self.max_listings:
+            self.logger.info(f"Maximum listings to collect: {self.max_listings}")
 
     def configure_chrome_driver(self) -> webdriver.Chrome:
         """Configure Chrome driver for BaT scraping."""
@@ -65,10 +69,16 @@ class BaTScraper:
         
         return driver
 
-    def should_continue(self) -> bool:
-        """Check if scraping should continue based on time limit."""
+    def should_continue(self, current_scraped_count: int = 0) -> bool:
+        """Check if scraping should continue based on time limit and listing count."""
         elapsed = datetime.now() - self.start_time
-        return elapsed < self.max_runtime
+        time_exceeded = elapsed >= self.max_runtime
+        
+        if self.max_listings is not None:
+            count_exceeded = current_scraped_count >= self.max_listings
+            return not (time_exceeded or count_exceeded)
+        
+        return not time_exceeded
 
     def parse_bat_date_format(self, date_str: str) -> Optional[datetime]:
         """Parse BaT-specific date formats like '9/18/25' or '9/17/25'."""
@@ -922,8 +932,8 @@ class BaTScraper:
 
     def scrape_listing_details(self, listing_url: str) -> Optional[Dict[str, Any]]:
         """Scrape detailed information from a BaT listing with improved description/location extraction."""
-        if not self.should_continue():
-            return None
+        # Check if we need to stop before starting each listing
+        # This will be checked in the main loop with scraped count
 
         self.logger.info(f"Scraping listing: {listing_url}")
         driver = None
@@ -1172,10 +1182,10 @@ class BaTScraper:
         return normalized
 
 
-def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
-    """Scrape BaT for Porsche 911 listings."""
+def scrape_bat_listings(max_runtime_minutes: int = 45, max_listings: Optional[int] = None) -> Dict[str, Any]:
+    """Scrape BaT for Porsche 911 listings with optional max listings limit."""
     logger = setup_logging()
-    scraper = BaTScraper(max_runtime_minutes)
+    scraper = BaTScraper(max_runtime_minutes, max_listings)
 
     # Results storage
     results = {
@@ -1190,6 +1200,7 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
             'updated_vins': 0,
             'skipped_old_listings': 0,
             'cutoff_date': scraper.cutoff_date.strftime('%Y-%m-%d'),
+            'max_listings_limit': max_listings,
             'source': 'BringATrailer',
             'target': 'Porsche 911 (1981+) - Last 3 Months Data - Fixed Description/Location'
         },
@@ -1206,9 +1217,16 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
         listing_urls = scraper.search_porsche_911_listings()
         results['metadata']['total_listings_found'] = len(listing_urls)
 
+        # If we have a max_listings limit, truncate the URL list for efficiency
+        if max_listings and len(listing_urls) > max_listings:
+            listing_urls = listing_urls[:max_listings * 2]  # Get 2x to account for skips
+            logger.info(f"Truncated listing URLs to {len(listing_urls)} for testing (2x max_listings to account for skips)")
+
         # Start performance tracking for scraping phase
         scraping_start_time = datetime.now()
         print(f"🚀 Starting detailed scraping of {len(listing_urls)} listings...")
+        if max_listings:
+            print(f"🎯 Limited to maximum of {max_listings} listings for testing")
 
         # Scrape individual listings
         scraped_count = 0
@@ -1216,8 +1234,13 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
         skipped_old = 0
 
         for i, url in enumerate(listing_urls, 1):
-            if not scraper.should_continue():
-                logger.info("Time limit reached, stopping scrape")
+            if not scraper.should_continue(scraped_count):
+                if scraper.max_listings and scraped_count >= scraper.max_listings:
+                    logger.info(f"Max listings limit ({scraper.max_listings}) reached, stopping scrape")
+                    print(f"🎯 Max listings limit ({scraper.max_listings}) reached!")
+                else:
+                    logger.info("Time limit reached, stopping scrape")
+                    print("⏰ Time limit reached!")
                 break
 
             listing_data = scraper.scrape_listing_details(url)
@@ -1228,23 +1251,32 @@ def scrape_bat_listings(max_runtime_minutes: int = 45) -> Dict[str, Any]:
 
                 normalized_record = scraper.normalize_bat_record(listing_data)
                 results['listings'].append(normalized_record)
+                
+                # Check if we've hit the max listings limit after successfully scraping
+                if scraper.max_listings and scraped_count >= scraper.max_listings:
+                    logger.info(f"Max listings limit ({scraper.max_listings}) reached after scraping {scraped_count} listings")
+                    print(f"🎯 Max listings limit reached! Scraped {scraped_count} listings.")
+                    break
             else:
                 skipped_old += 1
 
-            # Progress reporting every 10 listings
-            if i - last_report_count >= report_interval:
+            # Progress reporting every 10 listings or when hitting the limit
+            if (i - last_report_count >= report_interval or 
+                (scraper.max_listings and scraped_count >= scraper.max_listings)):
                 elapsed_minutes = (datetime.now() - scraping_start_time).total_seconds() / 60
                 rate_per_minute = i / elapsed_minutes if elapsed_minutes > 0 else 0
                 remaining_listings = len(listing_urls) - i
                 eta_minutes = remaining_listings / rate_per_minute if rate_per_minute > 0 else 0
                 
                 progress_msg = f"⚡ Progress: {i}/{len(listing_urls)} listings ({i/len(listing_urls)*100:.1f}%) | Rate: {rate_per_minute:.1f}/min | ETA: {eta_minutes:.1f}min"
+                if scraper.max_listings:
+                    progress_msg += f" | Scraped: {scraped_count}/{scraper.max_listings}"
                 print(progress_msg)
                 logger.info(progress_msg)
                 last_report_count = i
 
             # Small delay between listings
-            time.sleep(0.5)  # Reduced from 2
+            time.sleep(0.5)
 
         results['metadata']['total_listings_scraped'] = scraped_count
         results['metadata']['listings_with_vins'] = vins_found
@@ -1269,6 +1301,8 @@ def main():
     parser = argparse.ArgumentParser(description='Scrape Bring a Trailer for Porsche 911 listings')
     parser.add_argument('--max-runtime', type=int, default=45,
                         help='Maximum runtime in minutes (default: 45)')
+    parser.add_argument('--max-listings', type=int, default=None,
+                        help='Maximum number of listings to scrape (default: no limit)')
     parser.add_argument('--output', default='bat-porsche-911-listings.json',
                         help='Output filename')
 
@@ -1276,20 +1310,26 @@ def main():
     logger = setup_logging()
 
     try:
-        logger.info(f"Starting 3-month BaT scrape with {args.max_runtime} minute limit")
+        if args.max_listings:
+            logger.info(f"Starting limited BaT scrape: max {args.max_listings} listings, {args.max_runtime} minute limit")
+            print(f"🎯 Testing mode: Limited to {args.max_listings} listings")
+        else:
+            logger.info(f"Starting full BaT scrape with {args.max_runtime} minute limit")
 
         # Scrape listings
-        results = scrape_bat_listings(args.max_runtime)
+        results = scrape_bat_listings(args.max_runtime, args.max_listings)
 
         # Save results
         save_json_file(results, args.output)
 
         # Print summary
         metadata = results['metadata']
-        print(f"✅ BaT 3-month scraping completed")
+        print(f"✅ BaT scraping completed")
         print(f"📁 Results saved to {args.output}")
         print(f"⏱️ Runtime: {metadata['runtime_minutes']} minutes")
         print(f"📅 Cutoff date: {metadata['cutoff_date']} (last 3 months)")
+        if metadata.get('max_listings_limit'):
+            print(f"🎯 Max listings limit: {metadata['max_listings_limit']}")
         print(f"🔍 Listings found: {metadata['total_listings_found']}")
         print(f"📊 Listings scraped: {metadata['total_listings_scraped']}")
         print(f"🚗 Valid WP0 VINs collected: {metadata['listings_with_vins']}")
@@ -1300,7 +1340,7 @@ def main():
             overall_rate = metadata['total_listings_scraped'] / metadata['runtime_minutes']
             print(f"⚡ Overall scraping rate: {overall_rate:.1f} listings/minute")
 
-        # Show status breakdown
+        # Show status breakdown if we have data
         if results['listings']:
             active_count = sum(1 for listing in results['listings']
                              if listing.get('bat_auction_status') == 'active')

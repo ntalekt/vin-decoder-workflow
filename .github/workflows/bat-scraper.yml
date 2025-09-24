@@ -2,17 +2,23 @@ name: BaT Porsche 911 Scraper
 
 on:
   schedule:
-    - cron: '21 12 * * *'  # 12:21 PM UTC = 5:21 AM MST
-  workflow_dispatch:  # Allow manual triggering
+    - cron: '21 12 * * *' # 12:21 PM UTC = 5:21 AM MST
+  workflow_dispatch: # Allow manual triggering
     inputs:
       max_runtime:
         description: 'Maximum runtime in minutes'
         required: false
         default: '120'
         type: string
+      max_listings:
+        description: 'Maximum number of listings to scrape (for testing)'
+        required: false
+        default: ''
+        type: string
 
 env:
   MAX_RUNTIME_MINUTES: ${{ github.event.inputs.max_runtime || '120' }}
+  MAX_LISTINGS: ${{ github.event.inputs.max_listings || '' }}
 
 jobs:
   scrape-bat:
@@ -20,19 +26,19 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      
+
       - name: Install Chrome
         run: |
           sudo apt-get update
@@ -41,7 +47,7 @@ jobs:
           sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
-      
+
       - name: Install ChromeDriver
         run: |
           # Get Chrome version more reliably
@@ -82,20 +88,30 @@ jobs:
           # Verify installation
           chromedriver --version
 
-      
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r scripts/requirements.txt
-      
+
       - name: Run BaT scraper
         run: |
           cd scripts
-          python scrape_bat.py \
-            --max-runtime ${{ env.MAX_RUNTIME_MINUTES }} \
-            --output ../bat-porsche-911-listings-$(date +%Y%m%d-%H%M).json
+          
+          # Build the command with optional max-listings parameter
+          SCRAPE_CMD="python scrape_bat.py --max-runtime ${{ env.MAX_RUNTIME_MINUTES }} --output ../bat-porsche-911-listings-$(date +%Y%m%d-%H%M).json"
+          
+          # Add max-listings parameter if provided
+          if [ -n "${{ env.MAX_LISTINGS }}" ]; then
+            SCRAPE_CMD="$SCRAPE_CMD --max-listings ${{ env.MAX_LISTINGS }}"
+            echo "🎯 Running in testing mode with max ${{ env.MAX_LISTINGS }} listings"
+          else
+            echo "🚀 Running full scrape"
+          fi
+          
+          echo "Executing: $SCRAPE_CMD"
+          eval $SCRAPE_CMD
         continue-on-error: true
-      
+
       - name: Merge BaT inventory
         run: |
           cd scripts
@@ -109,7 +125,7 @@ jobs:
           else
             echo "No BaT listings file found to process"
           fi
-      
+
       - name: Commit and push updates
         run: |
           git config user.name "github-actions[bot]"
@@ -118,11 +134,16 @@ jobs:
           if git diff --cached --quiet; then
             echo "📝 No changes to commit"
           else
-            git commit -m "🏎️ BaT scrape update: $(date '+%Y-%m-%d %H:%M UTC')"
+            # Include testing info in commit message if applicable
+            COMMIT_MSG="🏎️ BaT scrape update: $(date '+%Y-%m-%d %H:%M UTC')"
+            if [ -n "${{ env.MAX_LISTINGS }}" ]; then
+              COMMIT_MSG="$COMMIT_MSG (test run: ${{ env.MAX_LISTINGS }} listings)"
+            fi
+            git commit -m "$COMMIT_MSG"
             git push
             echo "✅ BaT inventory updated and pushed"
           fi
-      
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -132,11 +153,14 @@ jobs:
             archived_scrapes/
           retention-days: 30
         if: always()
-      
+
       - name: Display final summary
         run: |
           echo "🏁 BaT Scraper Workflow Complete"
-          echo "⏱️  Max Runtime: ${{ env.MAX_RUNTIME_MINUTES }} minutes"
+          echo "⏱️ Max Runtime: ${{ env.MAX_RUNTIME_MINUTES }} minutes"
+          if [ -n "${{ env.MAX_LISTINGS }}" ]; then
+            echo "🎯 Max Listings: ${{ env.MAX_LISTINGS }} (testing mode)"
+          fi
           echo "📊 Check bat_inventory.json for results"
           if [ -f bat_inventory.json ]; then
             TOTAL_VINS=$(python3 -c "import json; data=json.load(open('bat_inventory.json')); print(len(data.get('inventory', [])))")
