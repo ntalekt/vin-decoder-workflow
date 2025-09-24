@@ -808,62 +808,6 @@ class BaTScraper:
         # Default to unknown if we can't determine
         return 'unknown'
 
-    def extract_enhanced_engine_specs(self, page_text: str) -> str:
-        """Enhanced engine specification extraction."""
-        # More comprehensive engine patterns including turbocharged engines
-        engine_patterns = [
-            r'turbocharged\s+(\d\.\d)[-\s]*l(?:iter)?\s+flat[-\s]*six',  # "Turbocharged 3.3-Liter Flat-Six"
-            r'(\d\.\d)[-\s]*l(?:iter)?\s+(?:turbocharged\s+)?flat[-\s]*six',  # "3.3-liter turbocharged flat-six"
-            r'(\d\.\d)[-\s]*l(?:iter)?',  # Generic "3.3-liter" or "3.3L"
-            r'(\d,?\d{3})\s*cc',  # "3300 cc" format
-            r'engine:\s*(\d\.\d)[-\s]*l',  # "Engine: 3.3-L"
-            r'displacement:\s*(\d\.\d)[-\s]*l',  # "Displacement: 3.3L"
-        ]
-
-        for pattern in engine_patterns:
-            match = re.search(pattern, page_text.lower())
-            if match:
-                displacement = match.group(1)
-                # Convert cc to liters if needed
-                if ',' in displacement or (displacement.isdigit() and int(displacement) > 10):
-                    try:
-                        cc_value = int(displacement.replace(',', ''))
-                        liter_value = cc_value / 1000
-                        displacement = f"{liter_value:.1f}"
-                    except ValueError:
-                        pass
-                return displacement
-        
-        return ""
-
-    def extract_enhanced_mileage(self, page_text: str) -> str:
-        """Enhanced mileage extraction with better patterns."""
-        # More comprehensive patterns for mileage
-        mileage_patterns = [
-            r'(\d{1,3}(?:,\d{3})*)[k\s]*miles?\s*shown',  # "61k miles shown", "61,000 miles shown"
-            r'(\d{1,3})[k\s]*miles?',  # "61k miles", "61k mile"
-            r'(\d{1,3}(?:,\d{3})*)\s*mile|mi\b',  # "61,000 mile", "61000 mi"
-            r'showing\s*(\d{1,3}(?:,\d{3})*)[k\s]*mile|mi',  # "showing 61k miles"
-            r'odometer[:\s]+(\d{1,3}(?:,\d{3})*)[k\s]*',  # "odometer: 61,000" or "odometer 61k"
-            r'has\s*(\d{1,3}(?:,\d{3})*)[k\s]*miles?',  # "has 61k miles"
-            r'(\d{1,3}(?:,\d{3})*)[k\s]*miles?\s*(?:indicated|displayed)',  # "61k miles indicated"
-        ]
-
-        for pattern in mileage_patterns:
-            match = re.search(pattern, page_text.lower())
-            if match:
-                mileage = match.group(1)
-                # Convert 'k' format to actual number
-                if 'k' in match.group(0).lower() and ',' not in mileage:
-                    try:
-                        mileage_num = int(mileage) * 1000
-                        mileage = f"{mileage_num:,}"
-                    except ValueError:
-                        pass
-                return mileage
-        
-        return ""
-
     def extract_clean_description(self, soup: BeautifulSoup) -> str:
         """Extract clean description, avoiding error messages and navigation text."""
         description = ""
@@ -877,14 +821,14 @@ class BaTScraper:
             },
             # Approach 2: Look for paragraphs with meaningful content
             {
-                'selectors': ['div.listing-content p', 'div.auction-content p', 'main p', 'p'],
+                'selectors': ['div.listing-content p', 'div.auction-content p', 'main p'],
                 'min_length': 30
             },
             # Approach 3: Look for text blocks that contain car-specific keywords
             {
                 'selectors': ['div', 'section', 'article'],
                 'min_length': 100,
-                'must_contain': ['powered by', 'engine', 'transmission', 'miles', 'purchased', 'equipped', 'features', 'turbocharged', 'flat-six']
+                'must_contain': ['powered by', 'engine', 'transmission', 'miles', 'purchased', 'equipped', 'features']
             }
         ]
         
@@ -905,11 +849,6 @@ class BaTScraper:
             r'sort by',
             r'show more',
             r'load more',
-            r'your existing pre-authorization will be released',
-            r'located in united states',
-            r'copy auction link',
-            r'send this auction via email',
-            r'get the bat daily email',
         ]
         
         for approach in approaches:
@@ -947,40 +886,35 @@ class BaTScraper:
         return description
 
     def extract_clean_location(self, soup: BeautifulSoup, page_text: str) -> str:
-        """Extract clean location, avoiding description text and error messages."""
+        """Extract clean location, avoiding description text."""
         location = ""
         
-        # Enhanced location-specific patterns in text
+        # Location-specific patterns in text
         location_patterns = [
-            # More specific patterns that avoid description text
-            r'seller[:\s]+[^,\n]+[,\s]+([A-Za-z\s]+,\s*[A-Z]{2}(?:\s+\d{5})?)',  # "Seller: Name, City, ST 12345"
-            r'(?:from|in)\s+([A-Za-z\s]+,\s*[A-Z]{2}(?:\s+\d{5})?)',  # "from City, ST 12345"
-            r'([A-Za-z\s]+,\s*[A-Z]{2}\s*\d{5})',  # "City, ST 12345"
+            r'located in ([^,\n.]+(?:,\s*[A-Z]{2})?)',  # "Located in City, ST" 
+            r'seller[:\s]+[^,\n]+[,\s]+([^,\n.]+(?:,\s*[A-Z]{2})?)',  # "Seller: Name, Location"
+            r'(?:from|in)\s+([A-Z][a-z]+(?:,\s*[A-Z]{2})?)',  # "from/in Location"
         ]
         
         # Try to extract location from page text using patterns
         for pattern in location_patterns:
-            matches = re.findall(pattern, page_text, re.MULTILINE | re.IGNORECASE)
-            for match in matches:
-                potential_location = match.strip()
+            match = re.search(pattern, page_text, re.IGNORECASE)
+            if match:
+                potential_location = match.group(1).strip()
                 
-                # Validate it looks like a location (not a long description or error message)
-                if (20 <= len(potential_location) <= 100 and 
-                    not any(word in potential_location.lower() for word in ['powered by', 'engine', 'transmission', 'miles', 'purchased', 'your existing', 'pre-authorization', 'will be released', 'notify me', 'view all listings', 'turbocharged', 'flat-six']) and
-                    ',' in potential_location):  # Locations usually have city, state format
+                # Validate it looks like a location (not a long description)
+                if (len(potential_location) < 100 and 
+                    not any(word in potential_location.lower() for word in ['powered by', 'engine', 'transmission', 'miles', 'purchased'])):
                     location = potential_location
                     break
-                    
-            if location:
-                break
         
-        # If no location found from text patterns, try specific selectors with better filtering
+        # If no location found, try specific selectors
         if not location:
             location_selectors = [
                 'span[class*="location"]',
                 'div[class*="location"]',
-                '.seller-location',
-                '.listing-location'
+                'span[class*="seller"]',
+                'div[class*="seller"]'
             ]
             
             for selector in location_selectors:
@@ -988,9 +922,7 @@ class BaTScraper:
                     element = soup.select_one(selector)
                     if element:
                         text = element.get_text(strip=True)
-                        # Better validation for element-based location
-                        if (10 <= len(text) <= 100 and ',' in text and 
-                            not any(word in text.lower() for word in ['your existing', 'pre-authorization', 'will be released', 'powered by', 'engine', 'transmission', 'turbocharged'])):
+                        if len(text) < 100 and text:  # Reasonable location length
                             location = text
                             break
                 except:
@@ -999,7 +931,7 @@ class BaTScraper:
         return location
 
     def scrape_listing_details(self, listing_url: str) -> Optional[Dict[str, Any]]:
-        """Scrape detailed information from a BaT listing with enhanced extraction methods."""
+        """Scrape detailed information from a BaT listing with improved description/location extraction."""
         # Check if we need to stop before starting each listing
         # This will be checked in the main loop with scraped count
 
@@ -1101,19 +1033,37 @@ class BaTScraper:
             # Price information
             listing_data['price_info'] = self.extract_price_from_text(page_text)
 
-            # ENHANCED: Mileage extraction
-            listing_data['mileage'] = self.extract_enhanced_mileage(page_text)
+            # Extract full details for comprehensive data collection
+            # Mileage
+            mileage_patterns = [
+                r'(\d{1,3}(?:,\d{3})*)\s*(?:mile|mi\b)',
+                r'showing\s*(\d{1,3}(?:,\d{3})*)',
+                r'odometer[:\s]+(\d{1,3}(?:,\d{3})*)',
+            ]
 
-            # ENHANCED: Clean location extraction
+            for pattern in mileage_patterns:
+                match = re.search(pattern, page_text.lower())
+                if match:
+                    listing_data['mileage'] = match.group(1)
+                    break
+
+            # FIXED: Clean location extraction
             listing_data['location'] = self.extract_clean_location(soup, page_text)
 
             # Specifications
             specs_text = page_text.lower()
 
-            # ENHANCED: Engine specifications
-            engine_displacement = self.extract_enhanced_engine_specs(page_text)
-            if engine_displacement:
-                listing_data['specifications']['engine'] = engine_displacement
+            # Engine
+            engine_patterns = [
+                r'(\d\.\d)\s*(?:l|liter)',
+                r'(\d,?\d{3})\s*cc',
+            ]
+
+            for pattern in engine_patterns:
+                match = re.search(pattern, specs_text)
+                if match:
+                    listing_data['specifications']['engine'] = match.group(1)
+                    break
 
             # Transmission
             if any(word in specs_text for word in ['manual', 'stick', '5-speed', '6-speed']):
@@ -1141,7 +1091,7 @@ class BaTScraper:
 
             listing_data['features'] = features
 
-            # ENHANCED: Clean description extraction
+            # FIXED: Clean description extraction
             listing_data['description'] = self.extract_clean_description(soup)
 
             # Photos
@@ -1252,7 +1202,7 @@ def scrape_bat_listings(max_runtime_minutes: int = 45, max_listings: Optional[in
             'cutoff_date': scraper.cutoff_date.strftime('%Y-%m-%d'),
             'max_listings_limit': max_listings,
             'source': 'BringATrailer',
-            'target': 'Porsche 911 (1981+) - Last 3 Months Data - Enhanced Extraction'
+            'target': 'Porsche 911 (1981+) - Last 3 Months Data - Fixed Description/Location'
         },
         'listings': []
     }
