@@ -867,6 +867,8 @@ class BaTScraper:
                         
                     if description:
                         break
+                except Exception as e:
+                    continue
                         
                 if description:
                     break
