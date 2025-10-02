@@ -1,8 +1,8 @@
 name: BaT Porsche 911 Scraper
 
 on:
-  schedule:
-    - cron: '21 12 * * *' # 12:21 PM UTC = 5:21 AM MST
+  # schedule:
+  #   - cron: '21 12 * * *' # 12:21 PM UTC = 5:21 AM MST
   workflow_dispatch: # Allow manual triggering
     inputs:
       max_runtime:
